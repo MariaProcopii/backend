@@ -14,7 +14,7 @@ import org.modelmapper.ModelMapper;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,8 +71,8 @@ class LicenseServiceTest {
 
         final List<LicenseDTO> result = licenseService.getActiveLicenses();
 
-        assertEquals(EXPECTED_ACTIVE_LICENSES_COUNT, result.size());
-        assertEquals(ACTIVE_LICENSE_NAME, result.get(0).getName());
+        assertThat(result).hasSize(EXPECTED_ACTIVE_LICENSES_COUNT);
+        assertThat(result.get(0).getName()).isEqualTo(ACTIVE_LICENSE_NAME);
         verify(licenseRepository).findAll();
         verify(modelMapper).map(activeLicense, LicenseDTO.class);
     }
@@ -87,8 +87,8 @@ class LicenseServiceTest {
 
         final List<LicenseDTO> result = licenseService.getExpiredLicenses();
 
-        assertEquals(EXPECTED_EXPIRED_LICENSES_COUNT, result.size());
-        assertEquals(EXPIRED_LICENSE_NAME, result.get(0).getName());
+        assertThat(result).hasSize(EXPECTED_EXPIRED_LICENSES_COUNT);
+        assertThat(result.get(0).getName()).isEqualTo(EXPIRED_LICENSE_NAME);
         verify(licenseRepository).findAll();
         verify(modelMapper).map(expiredLicense, LicenseDTO.class);
     }
