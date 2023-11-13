@@ -1,30 +1,29 @@
 package com.training.license.sharing.services;
 
+import com.training.license.sharing.dto.UserDTO;
 import com.training.license.sharing.entities.User;
+import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.training.license.sharing.entities.enums.Status.INACTIVE;
 import static com.training.license.sharing.util.LoggerUtil.logInfo;
 
 @Service
-@Transactional(readOnly = true)
+@AllArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Transactional
     public User saveUser(User user) {
         logInfo("Saving user: " + user.getName());
         return userRepository.save(user);
@@ -41,34 +40,46 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<User> changeRoleForUsers(List<Long> userIds, Role newRole) {
-        return userIds.stream()
+        final List<User> userList = userIds.stream()
                 .map(this::getUserById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(user -> {
-                    user.setRole(newRole);
-                    return user;
-                })
-                .map(this::saveUser)
-                .peek(user -> logInfo("Role changed for user ID " + user.getId() + ": " + newRole))
-                .collect(Collectors.toList());
+                .flatMap(Optional::stream)
+                .toList();
+
+        for (User user : userList) {
+            user.setRole(newRole);
+            saveUser(user);
+            logInfo("Role changed for user ID " + user.getId() + ": " + newRole);
+        }
+
+        return userList;
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<User> deactivateUsers(List<Long> userIds) {
         logInfo("Deactivating users: " + userIds);
 
-        return userIds.stream()
+        final List<User> userList = userIds.stream()
                 .map(this::getUserById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(user -> {
-                    user.setStatus(INACTIVE);
-                    return user;
-                })
-                .map(this::saveUser)
-                .peek(user -> logInfo("User ID " + user.getId() + " deactivated"))
-                .collect(Collectors.toList());
+                .flatMap(Optional::stream)
+                .toList();
+
+        for (User user : userList) {
+            user.setStatus(INACTIVE);
+            saveUser(user);
+            logInfo("User ID " + user.getId() + " deactivated");
+        }
+
+        return userList;
+    }
+
+    public Optional<User> findByNameAndDiscipline(String name, Discipline discipline) {
+        return userRepository.findByUsernameAndDiscipline(name, discipline);
+    }
+
+    public UserDTO convertToDTO(User user) {
+        return modelMapper.map(user, UserDTO.class);
     }
 }

@@ -8,23 +8,19 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-
 
 @Getter
 @Setter
 @Entity
-@Table
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,16 +28,18 @@ public class License {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer licenseId;
+    private Long id;
 
     @NotNull
     @Column(name = "license_name")
     private String licenseName;
 
     @NotNull
+    @Column(name = "cost")
     private Integer cost;
 
     @NotNull
+    @Column(name = "availability")
     private Integer availability;
 
     @Enumerated(EnumType.STRING)
@@ -52,14 +50,12 @@ public class License {
     @Column(name = "unused_period")
     private Integer unusedPeriod;
 
+    @DateTimeFormat(pattern = "dd-MMM-yyyy")
     @Column(name = "activation_date")
     private LocalDate activationDate;
 
+    @DateTimeFormat(pattern = "dd-MMM-yyyy")
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
 
 }

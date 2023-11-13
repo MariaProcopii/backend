@@ -2,7 +2,6 @@ package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.LicenseDTO;
 import com.training.license.sharing.entities.License;
-import com.training.license.sharing.entities.User;
 import com.training.license.sharing.repositories.LicenseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LicenseServiceTest {
+class LicenseServiceTest {
 
     private static final String ACTIVE_LICENSE_NAME = "Active License";
     private static final String EXPIRED_LICENSE_NAME = "Active License";
@@ -35,26 +34,17 @@ public class LicenseServiceTest {
     @InjectMocks
     private LicenseService licenseService;
 
-    private User testUser;
     private License activeLicense;
     private License expiredLicense;
 
     @BeforeEach
     void setUp() {
-        testUser = createUser();
-        activeLicense = createActiveLicense(testUser);
-        expiredLicense = createExpiredLicense(testUser);
+        activeLicense = createActiveLicense();
+        expiredLicense = createExpiredLicense();
     }
 
-    private User createUser() {
-        User user = new User();
-        user.setId(1L);
-        return user;
-    }
-
-    private License createActiveLicense(User user) {
+    private License createActiveLicense() {
         return License.builder()
-                .user(user)
                 .licenseName(ACTIVE_LICENSE_NAME)
                 .cost(100)
                 .availability(10)
@@ -62,9 +52,8 @@ public class LicenseServiceTest {
                 .build();
     }
 
-    private License createExpiredLicense(User user) {
+    private License createExpiredLicense() {
         return License.builder()
-                .user(user)
                 .licenseName(EXPIRED_LICENSE_NAME)
                 .cost(50)
                 .availability(0)
@@ -80,7 +69,7 @@ public class LicenseServiceTest {
         activeLicenseDTO.setName(ACTIVE_LICENSE_NAME);
         when(modelMapper.map(activeLicense, LicenseDTO.class)).thenReturn(activeLicenseDTO);
 
-        final List<LicenseDTO> result = licenseService.getActiveLicenses(testUser.getId());
+        final List<LicenseDTO> result = licenseService.getActiveLicenses();
 
         assertEquals(EXPECTED_ACTIVE_LICENSES_COUNT, result.size());
         assertEquals(ACTIVE_LICENSE_NAME, result.get(0).getName());
@@ -96,7 +85,7 @@ public class LicenseServiceTest {
         expiredLicenseDTO.setName(EXPIRED_LICENSE_NAME);
         when(modelMapper.map(expiredLicense, LicenseDTO.class)).thenReturn(expiredLicenseDTO);
 
-        final List<LicenseDTO> result = licenseService.getExpiredLicenses(testUser.getId());
+        final List<LicenseDTO> result = licenseService.getExpiredLicenses();
 
         assertEquals(EXPECTED_EXPIRED_LICENSES_COUNT, result.size());
         assertEquals(EXPIRED_LICENSE_NAME, result.get(0).getName());
