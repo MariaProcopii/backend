@@ -7,7 +7,7 @@ CREATE SEQUENCE users_id_seq
 
 
 CREATE TABLE Users (
-                       id INT PRIMARY KEY DEFAULT nextval('users_id_seq'), -- Use the sequence
+                       id INT PRIMARY KEY DEFAULT nextval('users_id_seq'),
                        name VARCHAR(255),
                        email VARCHAR(255) UNIQUE,
                        position VARCHAR(255),
