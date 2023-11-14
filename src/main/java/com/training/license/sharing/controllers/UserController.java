@@ -2,12 +2,16 @@ package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.dto.UserDTO;
 import com.training.license.sharing.entities.User;
+import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.services.UserService;
+import com.training.license.sharing.util.UserConverters;
 import com.training.license.sharing.validator.UserValidation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.training.license.sharing.entities.enums.Role.valueOf;
@@ -32,33 +37,38 @@ public class UserController {
     private final UserService userService;
     private final UserValidation userValidation;
 
+    private final UserConverters userConverters;
+
     @Autowired
-    public UserController(UserService userService, UserValidation userValidation) {
+    public UserController(UserService userService, UserValidation userValidation, UserConverters userConverters) {
         this.userService = userService;
         this.userValidation = userValidation;
+        this.userConverters = userConverters;
     }
 
     @GetMapping("/get-all-users")
-    public ResponseEntity<List<UserDTO>> findAll() {
-        final List<UserDTO> users = userService.getAllUsers().stream()
-                .map(userService::convertToDTO)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserDTO>> findAll(@RequestParam(required = false, defaultValue = "asc") String sort) {
+        final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "role");
+        final List<UserDTO> users = userService.getAllUsers(sorting).stream()
+                .map(userConverters::convertToUserDTO)
                 .toList();
         return ResponseEntity.ok(users);
     }
 
     @PostMapping("/save-user")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid User user, BindingResult bindingResult) {
+    public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
-        final User savedUser = userService.saveUser(user);
-        return ResponseEntity.ok(userService.convertToDTO(savedUser));
+        final User savedUser = userService.saveUser(userConverters.convertToUser(user));
+        return ResponseEntity.ok(userConverters.convertToUserDTO(savedUser));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable("id") long id) {
+    public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id) {
         final Optional<User> userOptional = userService.getUserById(id);
-        return userOptional.map(user -> ResponseEntity.ok(userService.convertToDTO(user)))
+        return userOptional.map(user -> ResponseEntity.ok(userConverters.convertToUserDTO(user)))
                 .orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
     }
 
@@ -69,7 +79,7 @@ public class UserController {
         }
 
         final List<UserDTO> deactivatedUsers = userService.deactivateUsers(usersIds).stream()
-                .map(userService::convertToDTO)
+                .map(userConverters::convertToUserDTO)
                 .toList();
 
         return ResponseEntity.ok(deactivatedUsers);
@@ -84,10 +94,32 @@ public class UserController {
 
         final List<UserDTO> changedUsers = userService.changeRoleForUsers(usersIds, getRole(stringRole))
                 .stream()
-                .map(userService::convertToDTO)
+                .map(userConverters::convertToUserDTO)
                 .toList();
 
         return ResponseEntity.ok(changedUsers);
+    }
+
+    @GetMapping("/get-total-users")
+    public ResponseEntity<Integer> getTotalUsers() {
+        return ResponseEntity.ok(userService.getTotalUsers());
+    }
+
+    @GetMapping("/get-new-users")
+    public ResponseEntity<Integer> getNewUsersCount() {
+        return ResponseEntity.ok(userService.getNewUsersCountThisMonth());
+    }
+
+    @GetMapping("/get-total-disciplines")
+    public ResponseEntity<Integer> getTotalDisciplines() {
+        return ResponseEntity.ok(userService.getTotalDisciplines());
+    }
+
+    @GetMapping("/get-disciplines-with-users")
+    public ResponseEntity<Map<Discipline, Long>> getTotalUsersPerDiscipline(
+                                                            @RequestParam(name = "page", defaultValue = "0") int page,
+                                                            @RequestParam(name = "size", defaultValue = "8") int size) {
+        return ResponseEntity.ok(userService.getUsersPerDiscipline(page, size));
     }
 
     private Role getRole(String stringRole) {
