@@ -5,5 +5,3 @@ INSERT INTO Licenses (license_name, cost, availability, unused_period, license_t
     ('Udemy', 1999, 60, 21, 'TRAINING', '2023-09-09', '2024-03-09'),
     ('JetBrains', 1444, 120, 0, 'SOFTWARE', '2023-06-06', '2024-06-06')
 ;
-
-

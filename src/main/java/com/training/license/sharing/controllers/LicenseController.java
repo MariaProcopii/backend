@@ -4,7 +4,6 @@ import com.training.license.sharing.dto.LicenseDTO;
 import com.training.license.sharing.services.LicenseService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,13 +16,13 @@ public class LicenseController {
 
     private final LicenseService licenseService;
 
-    @GetMapping("/get-expiring-licenses/{userId}")
-    public List<LicenseDTO> getExpiringLicenses(@PathVariable Long userId) {
-        return licenseService.getActiveLicenses(userId);
+    @GetMapping("/get-expiring-licenses")
+    public List<LicenseDTO> getExpiringLicenses() {
+        return licenseService.getActiveLicenses();
     }
 
-    @GetMapping("/get-unused-licenses/{userId}")
-    public List<LicenseDTO> getUnusedLicenses(@PathVariable Long userId) {
-        return licenseService.getExpiredLicenses(userId);
+    @GetMapping("/get-unused-licenses")
+    public List<LicenseDTO> getUnusedLicenses() {
+        return licenseService.getExpiredLicenses();
     }
 }

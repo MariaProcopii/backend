@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class LicenseControllerTest {
+class LicenseControllerTest {
 
     @Mock
     private LicenseService licenseService;
@@ -32,30 +32,30 @@ public class LicenseControllerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(licenseController).build();
     }
 
     @Test
-    public void shouldGetExpiringLicenses() throws Exception {
+    void shouldGetExpiringLicenses() throws Exception {
         final List<LicenseDTO> licenses = new ArrayList<>();
         licenses.add(new LicenseDTO());
 
-        when(licenseService.getActiveLicenses(1L)).thenReturn(licenses);
+        when(licenseService.getActiveLicenses()).thenReturn(licenses);
 
-        mockMvc.perform(get("/license/get-expiring-licenses/1"))
+        mockMvc.perform(get("/license/get-expiring-licenses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
-    public void shouldGetUnusedLicenses() throws Exception {
+    void shouldGetUnusedLicenses() throws Exception {
         final List<LicenseDTO> licenses = new ArrayList<>();
         licenses.add(new LicenseDTO());
 
-        when(licenseService.getExpiredLicenses(1L)).thenReturn(licenses);
+        when(licenseService.getExpiredLicenses()).thenReturn(licenses);
 
-        mockMvc.perform(get("/license/get-unused-licenses/1"))
+        mockMvc.perform(get("/license/get-unused-licenses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }

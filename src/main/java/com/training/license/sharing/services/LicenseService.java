@@ -1,6 +1,5 @@
 package com.training.license.sharing.services;
 
-
 import com.training.license.sharing.dto.LicenseDTO;
 import com.training.license.sharing.entities.License;
 import com.training.license.sharing.repositories.LicenseRepository;
@@ -9,10 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
-
-
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,30 +20,36 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
     private final ModelMapper modelMapper;
 
-
-    public List<LicenseDTO> getActiveLicenses(Long userId) {
+    public List<LicenseDTO> getActiveLicenses() {
         return licenseRepository.findAll().stream()
-                .filter(license -> isAvailable(license) && getUserId(license).equals(userId))
+                .filter(this::isAvailable)
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public List<LicenseDTO> getExpiredLicenses(Long userId) {
+    public List<LicenseDTO> getExpiredLicenses() {
         return licenseRepository.findAll().stream()
-                .filter(license -> !isAvailable(license) && getUserId(license).equals(userId))
+                .filter(license -> !isAvailable(license))
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public LicenseDTO convertToDTO(License license) {
+    public Optional<License> findByNameAndStartDate(String licenseName, LocalDate startOfUse) {
+        return licenseRepository.findByLicenseName(licenseName, startOfUse)
+                .stream()
+                .findFirst();
+    }
+
+    public long findNumberOfUsersByLicense(License license) {
+        return licenseRepository.findNumberOfUsersByLicense(license);
+    }
+
+    private LicenseDTO convertToDTO(License license) {
         return modelMapper.map(license, LicenseDTO.class);
-    }
-
-    private Long getUserId(License license) {
-        return license.getUser() != null ? license.getUser().getId() : null;
     }
 
     private boolean isAvailable(License license) {
         return license.getAvailability() >= 0 && license.getUnusedPeriod() == 0;
     }
+
 }
