@@ -1,6 +1,5 @@
 package com.training.license.sharing.controllers;
 
-import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.services.UserService;
 import com.training.license.sharing.validator.UserValidation;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
