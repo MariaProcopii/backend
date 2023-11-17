@@ -5,6 +5,7 @@ import com.training.license.sharing.services.AverageUserCostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ import java.util.List;
 public class AverageUserCostController {
 
     private final AverageUserCostService service;
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-average-user-cost")
     public ResponseEntity<List<AverageUserCostViewDTO>> getAverageUserCost() {
         return ResponseEntity.ok(service.getAverageUserCosts());

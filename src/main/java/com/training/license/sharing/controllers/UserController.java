@@ -46,8 +46,8 @@ public class UserController {
         this.userConverters = userConverters;
     }
 
-    @GetMapping("/get-all-users")
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/get-all-users")
     public ResponseEntity<List<UserDTO>> findAll(@RequestParam(required = false, defaultValue = "asc") String sort) {
         final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "role");
         final List<UserDTO> users = userService.getAllUsers(sorting).stream()
@@ -56,6 +56,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save-user")
     public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -65,6 +66,7 @@ public class UserController {
         return ResponseEntity.ok(userConverters.convertToUserDTO(savedUser));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id) {
         final Optional<User> userOptional = userService.getUserById(id);
@@ -72,6 +74,7 @@ public class UserController {
                 .orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/deactivate-user")
     public ResponseEntity<List<UserDTO>> deactivateUsers(@RequestBody List<Long> usersIds) {
         if (!userValidation.areAllSelectedIdsExistingInDB(usersIds)) {
@@ -85,6 +88,7 @@ public class UserController {
         return ResponseEntity.ok(deactivatedUsers);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/changing-role")
     public ResponseEntity<List<UserDTO>> changeRole(@RequestBody List<Long> usersIds,
                                                     @RequestParam("role") String stringRole) {
@@ -99,22 +103,24 @@ public class UserController {
 
         return ResponseEntity.ok(changedUsers);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-total-users")
     public ResponseEntity<Integer> getTotalUsers() {
         return ResponseEntity.ok(userService.getTotalUsers());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-new-users")
     public ResponseEntity<Integer> getNewUsersCount() {
         return ResponseEntity.ok(userService.getNewUsersCountThisMonth());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-total-disciplines")
     public ResponseEntity<Integer> getTotalDisciplines() {
         return ResponseEntity.ok(userService.getTotalDisciplines());
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-disciplines-with-users")
     public ResponseEntity<Map<Discipline, Long>> getTotalUsersPerDiscipline(
                                                             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -125,4 +131,5 @@ public class UserController {
     private Role getRole(String stringRole) {
         return valueOf(stringRole);
     }
+
 }

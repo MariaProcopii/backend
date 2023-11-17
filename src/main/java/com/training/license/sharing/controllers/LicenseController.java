@@ -3,6 +3,7 @@ package com.training.license.sharing.controllers;
 import com.training.license.sharing.dto.LicenseDTO;
 import com.training.license.sharing.services.LicenseService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,12 +16,13 @@ import java.util.List;
 public class LicenseController {
 
     private final LicenseService licenseService;
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-expiring-licenses")
     public List<LicenseDTO> getExpiringLicenses() {
         return licenseService.getActiveLicenses();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-unused-licenses")
     public List<LicenseDTO> getUnusedLicenses() {
         return licenseService.getExpiredLicenses();

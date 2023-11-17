@@ -38,6 +38,10 @@ public class UserService {
         logInfo("Fetching all users");
         return userRepository.findAll(sort);
     }
+    public Optional<User> findByEmail(String email) {
+        logInfo("Fetching user by email: " + email);
+        return userRepository.findByEmail(email);
+    }
 
     public Optional<User> getUserById(Long userId) {
         logInfo("Fetching user by ID: " + userId);
