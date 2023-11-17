@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ public class RequestController {
         this.requestValidator = requestValidator;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @GetMapping("/get-requests")
     public List<UserRequestDTO> findAll(@RequestParam(name = "asc", required = false) Boolean asc,
                                         @RequestParam(name = "field", required = false) String field) {
@@ -59,7 +61,7 @@ public class RequestController {
                 .map(DefaultMessageSourceResolvable::getCode)
                 .toList();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @PutMapping("/approve-access")
     public ResponseEntity approveAccess(@RequestBody List<Long> ids, BindingResult bindingResult) {
         requestValidator.validateRequestAccessApproval(ids, bindingResult);
@@ -70,7 +72,7 @@ public class RequestController {
         final List<String> errors = getErrorMessageList(bindingResult);
         return new ResponseEntity<>(errors, BAD_REQUEST);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @PutMapping("/reject-access")
     public ResponseEntity<HttpStatus> rejectAccess(@RequestBody List<Long> ids) {
         requestService.rejectRequest(ids);
