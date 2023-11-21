@@ -55,12 +55,6 @@ public class RequestController {
         return new ResponseEntity<>(errors, BAD_REQUEST);
     }
 
-    private static List<String> getErrorMessageList(BindingResult bindingResult) {
-        return bindingResult.getAllErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getCode)
-                .toList();
-    }
     @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @PutMapping("/approve-access")
     public ResponseEntity approveAccess(@RequestBody List<Long> ids, BindingResult bindingResult) {
@@ -72,10 +66,18 @@ public class RequestController {
         final List<String> errors = getErrorMessageList(bindingResult);
         return new ResponseEntity<>(errors, BAD_REQUEST);
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @PutMapping("/reject-access")
     public ResponseEntity<HttpStatus> rejectAccess(@RequestBody List<Long> ids) {
         requestService.rejectRequest(ids);
         return ResponseEntity.ok(OK);
+    }
+
+    private static List<String> getErrorMessageList(BindingResult bindingResult) {
+        return bindingResult.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getCode)
+                .toList();
     }
 }
