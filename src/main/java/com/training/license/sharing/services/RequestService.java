@@ -8,7 +8,6 @@ import com.training.license.sharing.entities.User;
 import com.training.license.sharing.repositories.RequestRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,6 @@ public class RequestService {
         this.licenseService = licenseService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_REVIEWER')")
     public List<UserRequestDTO> findAll(Boolean asc, String field) {
         asc = Objects.requireNonNullElse(asc, false);
         field = Objects.requireNonNullElse(field, "id");
@@ -52,7 +50,6 @@ public class RequestService {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_REVIEWER')")
     @Transactional
     public void approveRequest(List<Long> ids) {
         findAllById(ids).stream()
@@ -63,7 +60,6 @@ public class RequestService {
                 });
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_REVIEWER')")
     @Transactional
     public void rejectRequest(List<Long> ids) {
         findAllById(ids).stream()
@@ -74,7 +70,6 @@ public class RequestService {
                 });
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_REVIEWER')")
     public void requestAccess(RequestDTO dto) {
         final User user = userService.findByNameAndDiscipline(dto.getUsername(), dto.getDiscipline()).get();
         requestRepository.save(Request.builder().id(0L)
@@ -87,7 +82,6 @@ public class RequestService {
         );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_REVIEWER')")
     public List<Request> findAllById(List<Long> ids) {
         return requestRepository.findAllById(ids);
     }

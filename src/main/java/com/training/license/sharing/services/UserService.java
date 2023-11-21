@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +37,7 @@ public class UserService {
         logInfo("Fetching all users");
         return userRepository.findAll(sort);
     }
+
     public Optional<User> findByEmail(String email) {
         logInfo("Fetching user by email: " + email);
         return userRepository.findByEmail(email);
@@ -49,7 +49,6 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<User> changeRoleForUsers(List<Long> userIds, Role newRole) {
         final List<User> userList = userIds.stream()
                 .map(this::getUserById)
@@ -66,7 +65,6 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<User> deactivateUsers(List<Long> userIds) {
         logInfo("Deactivating users: " + userIds);
 
