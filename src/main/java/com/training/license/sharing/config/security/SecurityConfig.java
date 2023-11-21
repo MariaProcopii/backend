@@ -12,23 +12,24 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-        @Bean
-        public InMemoryUserDetailsManager userDetailsService() {
-            UserDetails user = User.withDefaultPasswordEncoder()
-                    .username("a")
-                    .password("a")
-                    .roles("USER")
-                    .build();
 
-            return new InMemoryUserDetailsManager(user);
-        }
+    //ToDo: To delete this class when OAuth story will be ready!
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        final UserDetails user = User.withDefaultPasswordEncoder()
+                .username("admin")
+                .password("admin")
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
 
-        @Bean
-        public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                    .requestMatchers("/get-requests")
-                    .hasRole("USER")
-                    .and().httpBasic();
-            return http.build();
-        }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest().authenticated()
+                .and().csrf().ignoringRequestMatchers("/**")
+                .and().httpBasic();
+        return http.build();
+    }
 }
