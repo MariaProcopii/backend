@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.training.license.sharing.entities.enums.DeliveryUnit;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Position;
-import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.entities.enums.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,11 +12,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,14 +53,9 @@ public class User {
     @Column(name = "last_active")
     private Integer lastActive;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role role;
-
-    @Email
-    @NotEmpty
-    @Column(name = "email")
-    private String email;
+    @ManyToOne()
+    @JoinColumn(name = "credentialId" , referencedColumnName = "id")
+    private Credential credential;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user")

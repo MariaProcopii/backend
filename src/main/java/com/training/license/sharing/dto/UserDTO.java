@@ -3,13 +3,9 @@ package com.training.license.sharing.dto;
 import com.training.license.sharing.entities.enums.DeliveryUnit;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Position;
-import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.entities.enums.Status;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +34,5 @@ public class UserDTO {
 
     private Integer lastActive;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Email
-    @NotEmpty
-    private String email;
-
+    CredentialDTO credential;
 }

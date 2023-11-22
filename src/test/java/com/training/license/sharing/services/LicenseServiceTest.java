@@ -46,7 +46,7 @@ class LicenseServiceTest {
     private License createActiveLicense() {
         return License.builder()
                 .licenseName(ACTIVE_LICENSE_NAME)
-                .cost(100)
+                .cost(100.0)
                 .availability(10)
                 .unusedPeriod(0)
                 .build();
@@ -55,7 +55,7 @@ class LicenseServiceTest {
     private License createExpiredLicense() {
         return License.builder()
                 .licenseName(EXPIRED_LICENSE_NAME)
-                .cost(50)
+                .cost(50.0)
                 .availability(0)
                 .unusedPeriod(5)
                 .build();
