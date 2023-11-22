@@ -192,6 +192,64 @@ _Response status:_
 ```
 ---
 
+**GET** `http://localhost:8080/users/get-total-users`
+
+  _Response body:_
+```json
+[
+  5
+]
+```
+_Response status:_
+```
+200
+```
+---
+
+**GET** `http://localhost:8080/users/get-new-users`
+
+_Response body:_
+```json
+[
+  0
+]
+```
+_Response status:_
+```
+200
+```
+---
+
+**GET** `http://localhost:8080/users/get-total-disciplines`
+
+_Response body:_
+```json
+[
+  3
+]
+```
+_Response status:_
+```
+200
+```
+---
+
+**GET** `http://localhost:8080/users/get-disciplines-with-users`
+
+_Response body:_
+```json
+{
+  "TESTING": 1,
+  "DEVELOPMENT": 3,
+  "CREATIVE_SERVICES": 1
+}
+```
+_Response status:_
+```
+200
+```
+---
+
 **POST** `http://localhost:8080/users/save-user`
 * Saves a new user to the system.
   _Request body:_
