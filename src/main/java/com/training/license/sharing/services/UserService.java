@@ -5,16 +5,18 @@ import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.repositories.UserRepository;
-import lombok.AllArgsConstructor;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,18 +27,43 @@ import static com.training.license.sharing.entities.enums.Status.INACTIVE;
 import static com.training.license.sharing.util.LoggerUtil.logInfo;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
+    @Value("${admin.user.username}")
+    private String adminUsername;
+
+    @Value("${admin.user.password}")
+    private String adminPassword;
 
     private final UserRepository userRepository;
     private final CredentialsService credentialsService;
+    private final PasswordEncoder passwordEncoder;
+
+    @PostConstruct
+    public void initAdminUser() {
+        if (!credentialsService.findByUsername(adminUsername).isPresent()) {
+            Credential adminCredential = new Credential();
+            adminCredential.setUsername(adminUsername);
+            adminCredential.setPassword(passwordEncoder.encode(adminPassword));
+            adminCredential.setRole(Role.ADMIN);
+
+            Credential savedCredential = credentialsService.saveCredential(adminCredential);
+
+            User adminUser = new User();
+            adminUser.setName("Admin User");
+            adminUser.setCredential(savedCredential);
+            userRepository.save(adminUser);
+        }
+    }
 
     public User saveUser(User user, Boolean isNewUserCreation) {
         logInfo("Saving user: " + user.getName());
         if (isNewUserCreation){
-            encodeUserPassword(user);
+            encodeUserPasswordWithBcrypt(user);
             credentialsService.saveCredential(user.getCredential());
         }
+        credentialsService.saveCredential(user.getCredential());
+
         return userRepository.save(user);
     }
 
@@ -120,9 +147,9 @@ public class UserService {
         return userRepository.countByLastActiveLessThan(currentDayOfMonth);
     }
 
-    private void encodeUserPassword(User user) {
+    private void encodeUserPasswordWithBcrypt(User user) {
         String password = user.getCredential().getPassword();
-        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+        String encodedPassword = passwordEncoder.encode(password);
         user.getCredential().setPassword(encodedPassword);
     }
 }

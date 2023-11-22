@@ -12,12 +12,12 @@ import java.util.Optional;
 public class CredentialsService {
     private final CredentialRepository credentialRepository;
 
-    public Optional<Credential> findById(long id){
-        return credentialRepository.findById(id);
+    public Credential saveCredential(Credential credential) {
+        return credentialRepository.save(credential);
     }
 
-    public Credential saveCredential(Credential credential){
-        return credentialRepository.save(credential);
+    public Optional<Credential> findByUsername(String string) {
+        return credentialRepository.findByUsername(string);
     }
 
 }
