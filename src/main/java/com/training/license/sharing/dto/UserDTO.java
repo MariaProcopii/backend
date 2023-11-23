@@ -6,6 +6,7 @@ import com.training.license.sharing.entities.enums.Position;
 import com.training.license.sharing.entities.enums.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.Setter;
 public class UserDTO {
     private Long Id;
 
+    @NotBlank(message = "Name should not be blank")
     private String name;
 
     @Enumerated(EnumType.STRING)
