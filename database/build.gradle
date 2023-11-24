@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'org.flywaydb.flyway'  version '8.5.5'
+}
+
+group = 'org.training.license.sharing'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+flyway {
+    driver = 'org.postgresql.Driver'
+    url = 'jdbc:postgresql://localhost:5432/TrainingLicenseSharing'
+    user = 'postgres'
+    password = 'admin'
+    locations = ['filesystem:src/main/resources/db/migration','filesystem:src/main/resources/db/provisioning']
+}
+
+dependencies {
+    implementation 'org.postgresql:postgresql:42.7.0'
+}

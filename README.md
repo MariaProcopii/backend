@@ -23,23 +23,29 @@ Before you begin, ensure you have the following instaled:
 * JDK 17
 * PostgreSQL
 * Gradle
+* Rancher Desktop
 
-**Building the Application**
-1.  Build with Gradle:`./gradlew clean build`
-2.  Run Database Migrations with Flyway: `./gradlew flywayClean flywayMigrate`
+**Building the Application Locally**
+1. Open terminal in the root folder of the project
+2. Run `docker-compose up -d`
+3. Start the docker container `docker start postgres`
+4. Check container status `docker container ls -a`
+5. Run Database Migrations (from Linux terminal): `sh database/db-local.sh`
 
-**Running the Application**
-1. Start the Application:
-   Once the build is successful, start the application using: `./gradlew bootRun`
-2. Access the Application:
-* The application will be running on `http://localhost:8080`. Access the various endpoints
-  through a REST client or browser as needed.
-* In Postman choose Basic Auth in Authorization tab, and enter the following credentials, 
+**Building the Application Remotely**
+1. After creating the workspace and deploying docker, open terminal in the root folder of the project
+2. Run Database Migrations (from Linux terminal): `sh database/db-env.sh`
+
+**Running the Application Locally**
+1. Open the Application using IntelliJ Idea
+2. Run it
+3. The application will be running on `http://localhost:8080`
+4. Access the various endpoints through a REST client or browser as needed
+5. In Postman choose Basic Auth in Authorization tab, and enter the following credentials: 
 * Username: _admin_ 
 * Password: _admin_
 
-3. You can access endpoint documentation using Swagger at this link:
-  `http://localhost:8080/swagger-ui/index.html`
+6. You can access detailed documentation using Swagger following this link: `http://localhost:8080/swagger-ui/index.html`
 
 
 # API Endpoints:

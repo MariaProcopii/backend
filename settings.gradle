@@ -1,2 +1,2 @@
 rootProject.name = 'training-licenses-sharing'
-
+include 'database'
