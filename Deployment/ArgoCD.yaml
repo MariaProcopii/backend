@@ -1,0 +1,81 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    appgw.ingress.kubernetes.io/health-probe-status-codes: 200-499
+    nginx.ingress.kubernetes.io/whitelist-source-range: 193.33.93.43/32
+    appgw.ingress.kubernetes.io/ssl-redirect: 'true'
+    cert-manager.io/acme-challenge-type: http01
+    cert-manager.io/cluster-issuer: cert-manager-global
+    external-dns.alpha.kubernetes.io/hostname: tls-be.app.mddinternship.com
+  labels:
+    app: tls-be
+  name: tls-be-ingres
+spec:
+  rules:
+    - host: tls-be.app.mddinternship.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: tls-be-service
+                port:
+                  number: 5000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - tls-be.app.mddinternship.com
+      secretName: tls-be-db-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tls-be-service
+spec:
+  selector:
+    #app.kubernetes.io/name: tls-be
+    app: tls-be
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 80
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: ewogICJhdXRocyI6IHsKICAgICJuZXh1cy50b29sLm1kZGludGVybnNoaXAuY29tIjogewogICAgICAiYXV0aCI6ICJZV1J0YVc0NmJtVjRkWE5CWkcxcGJnPT0iCiAgICB9CiAgfQp9Cg==
+kind: Secret
+metadata:
+  name: nexus-docker
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-be
+  labels:
+    app: tls-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tls-be
+  template:
+    metadata:
+      labels:
+        app: tls-be
+    spec:
+      containers:
+        - name: bsbackend
+          image: nexus.tool.mddinternship.com/repository/booksharing_be:main
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          # readinessProbe:
+          #   httpGet:
+          #     path: /   # Adjust the path based on your application
+          #     port: 80
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 5
+      imagePullSecrets:
+        - name: nexus-docker
