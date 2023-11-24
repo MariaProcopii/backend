@@ -1,5 +1,6 @@
 package com.training.license.sharing.services;
 
+import com.training.license.sharing.entities.Credential;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,20 +29,20 @@ import static com.training.license.sharing.util.LoggerUtil.logInfo;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CredentialsService credentialsService;
 
-    public User saveUser(User user) {
+    public User saveUser(User user, Boolean isNewUserCreation) {
         logInfo("Saving user: " + user.getName());
+        if (isNewUserCreation){
+            encodeUserPassword(user);
+            credentialsService.saveCredential(user.getCredential());
+        }
         return userRepository.save(user);
     }
 
     public List<User> getAllUsers(Sort sort) {
         logInfo("Fetching all users");
         return userRepository.findAll(sort);
-    }
-
-    public Optional<User> findByEmail(String email) {
-        logInfo("Fetching user by email: " + email);
-        return userRepository.findByEmail(email);
     }
 
     public Optional<User> getUserById(Long userId) {
@@ -56,12 +58,17 @@ public class UserService {
                 .toList();
 
         for (User user : userList) {
-            user.setRole(newRole);
-            saveUser(user);
+            changeRoleOfUser(newRole, user);
             logInfo("Role changed for user ID " + user.getId() + ": " + newRole);
         }
 
         return userList;
+    }
+
+    private void changeRoleOfUser(Role newRole, User user) {
+        Credential credential = user.getCredential();
+        credential.setRole(newRole);
+        credentialsService.saveCredential(credential);
     }
 
     @Transactional
@@ -75,7 +82,7 @@ public class UserService {
 
         for (User user : userList) {
             user.setStatus(INACTIVE);
-            saveUser(user);
+            saveUser(user, false);
             logInfo("User ID " + user.getId() + " deactivated");
         }
 
@@ -111,5 +118,11 @@ public class UserService {
     public int getNewUsersCountThisMonth() {
         int currentDayOfMonth = LocalDate.now().getDayOfMonth();
         return userRepository.countByLastActiveLessThan(currentDayOfMonth);
+    }
+
+    private void encodeUserPassword(User user) {
+        String password = user.getCredential().getPassword();
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+        user.getCredential().setPassword(encodedPassword);
     }
 }

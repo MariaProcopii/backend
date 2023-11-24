@@ -4,7 +4,9 @@ import com.training.license.sharing.dto.UserDTO;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
+import com.training.license.sharing.services.CredentialsService;
 import com.training.license.sharing.services.UserService;
+import com.training.license.sharing.util.CredentialConverter;
 import com.training.license.sharing.util.UserConverters;
 import com.training.license.sharing.validator.UserValidation;
 import jakarta.validation.Valid;
@@ -40,7 +42,7 @@ public class UserController {
     private final UserConverters userConverters;
 
     @Autowired
-    public UserController(UserService userService, UserValidation userValidation, UserConverters userConverters) {
+    public UserController(UserService userService, UserValidation userValidation, UserConverters userConverters, CredentialsService credentialsService, CredentialConverter credentialConverter) {
         this.userService = userService;
         this.userValidation = userValidation;
         this.userConverters = userConverters;
@@ -49,7 +51,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-all-users")
     public ResponseEntity<List<UserDTO>> findAll(@RequestParam(required = false, defaultValue = "asc") String sort) {
-        final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "role");
+        final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "credential.role");
         final List<UserDTO> users = userService.getAllUsers(sorting).stream()
                 .map(userConverters::convertToUserDTO)
                 .toList();
@@ -58,11 +60,13 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save-user")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO user, BindingResult bindingResult) {
+    public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
-        final User savedUser = userService.saveUser(userConverters.convertToUser(user));
+        final User userFromDTO = userConverters.convertToUser(userDTO);
+        final User savedUser = userService.saveUser(userFromDTO, true);
+
         return ResponseEntity.ok(userConverters.convertToUserDTO(savedUser));
     }
 

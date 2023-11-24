@@ -1,20 +1,18 @@
 package com.training.license.sharing.services;
 
-import static com.training.license.sharing.UserFactoryData.createTestUser;
-
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
 import com.training.license.sharing.entities.enums.Status;
 import com.training.license.sharing.repositories.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,21 +25,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.training.license.sharing.UserFactoryData.createTestUser;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    CredentialsService credentialsService;
 
     @Captor
     private ArgumentCaptor<Integer> dayOfMonthCaptor;
@@ -64,7 +66,7 @@ class UserServiceTest {
     void shouldSaveUser() {
         when(userRepository.save(USER1)).thenReturn(USER1);
 
-        final User savedUser = userService.saveUser(USER1);
+        final User savedUser = userService.saveUser(USER1, true);
 
         assertAll(
                 () -> assertThat(savedUser).isNotNull(),
@@ -125,16 +127,14 @@ class UserServiceTest {
         when(userRepository.findById(USER2.getId())).thenReturn(Optional.of(USER2));
         when(userRepository.findById(INVALID_USER_ID)).thenReturn(Optional.empty());
 
-        when(userRepository.save(USER1)).thenReturn(USER1);
-        when(userRepository.save(USER2)).thenReturn(USER2);
-
         final List<User> updatedUsers = userService.changeRoleForUsers(LIST_OF_IDS, newRole);
 
         assertAll(
                 () -> assertThat(updatedUsers).hasSize(2),
                 () -> verify(userRepository, times(3)).findById(anyLong()),
+                () -> verify(credentialsService,times(2)).saveCredential(any()),
                 () -> assertThat(updatedUsers)
-                        .extracting(User::getRole)
+                        .extracting(user -> user.getCredential().getRole())
                         .containsOnly(newRole)
         );
     }

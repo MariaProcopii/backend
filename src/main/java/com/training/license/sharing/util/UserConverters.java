@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class UserConverters {
     private ModelMapper modelMapper;
+    private CredentialConverter credentialConverter;
     public UserDTO convertToUserDTO(User user) {
-        return modelMapper.map(user, UserDTO.class);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        userDTO.setCredential(credentialConverter.convertToDTO(user.getCredential()));
+
+        return userDTO;
     }
 
     public User convertToUser(UserDTO userDTO) {
