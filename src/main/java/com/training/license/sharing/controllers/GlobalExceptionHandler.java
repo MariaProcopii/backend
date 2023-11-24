@@ -1,6 +1,5 @@
 package com.training.license.sharing.controllers;
 
-
 import com.training.license.sharing.util.CustomExceptions.CredentialsNonExistentException;
 import com.training.license.sharing.util.CustomExceptions.ImageHasIllegalTypeException;
 import com.training.license.sharing.util.CustomExceptions.ImageSizeOutOfBoundsException;

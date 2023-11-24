@@ -1,8 +1,11 @@
 package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.License;
+import com.training.license.sharing.entities.enums.Currency;
+import com.training.license.sharing.entities.enums.LicenseType;
 import com.training.license.sharing.repositories.LicenseCredentialRepository;
 import com.training.license.sharing.repositories.LicenseRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +18,7 @@ import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.training.license.sharing.util.NewLicenseTestData.CORRECT_NEW_LICENSE;
@@ -32,6 +36,12 @@ class LicenseServiceTest {
 
     private static final String ACTIVE_LICENSE_NAME = "Active License";
     private static final String EXPIRED_LICENSE_NAME = "Expired License";
+    private static final String CREATING_DATE = "creatingDate";
+    private static final String LICENSE_A = "License A";
+    private static final String LICENSE_B = "License B";
+    private static final String DESCRIPTION_A = "Description A";
+    private static final String DESCRIPTION_B = "Description B";
+
     private static final int EXPECTED_ACTIVE_LICENSES_COUNT = 1;
     private static final int EXPECTED_EXPIRED_LICENSES_COUNT = 1;
 
@@ -45,6 +55,7 @@ class LicenseServiceTest {
     private CredentialsService credentialsService;
     @Mock
     private ModelMapper modelMapper;
+
     @InjectMocks
     private LicenseService licenseService;
 
@@ -106,6 +117,70 @@ class LicenseServiceTest {
         assertThat(result.get(0).getName()).isEqualTo(EXPIRED_LICENSE_NAME);
         verify(licenseRepository).findAll();
         verify(modelMapper).map(expiredLicense, UnusedLicenseDTO.class);
+    }
+
+    @Test
+    public void testGetAllLicensesWhenWeHaveNoLicenses() {
+        when(licenseRepository.findAll()).thenReturn(Collections.emptyList());
+
+        final List<LicenseSummaryDTO> result = licenseService.getAllLicenses(null, CREATING_DATE);
+
+        assertThat(result).isEmpty();
+        verify(licenseRepository).findAll();
+    }
+
+    @Test
+    void shouldReturnFilteredLicenses() {
+        final License licenseA = createTestLicenseA();
+        final License licenseB = createTestLicenseB();
+
+        when(licenseRepository.findAll()).thenReturn(Arrays.asList(licenseA, licenseB));
+
+        String filterName = "A";
+        List<LicenseSummaryDTO> result = licenseService.getAllLicenses(filterName, CREATING_DATE);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getLicenseName()).isEqualTo(LICENSE_A);
+    }
+
+    private License createTestLicenseA() {
+        return License.builder()
+                .licenseName(LICENSE_A)
+                .creatingDate(LocalDate.now())
+                .cost(100.0)
+                .availability(10)
+                .licenseType(LicenseType.SOFTWARE)
+                .unusedPeriod(30)
+                .activationDate(LocalDate.now().minusDays(10))
+                .expirationDate(LocalDate.now().plusDays(30))
+                .logo(new byte[]{})
+                .website("http://exampleA.com")
+                .description(DESCRIPTION_A)
+                .currency(Currency.USD)
+                .seatsAvailable(5)
+                .seatsTotal(10)
+                .isRecurring(true)
+                .build();
+    }
+
+    private License createTestLicenseB() {
+        return License.builder()
+                .licenseName(LICENSE_B)
+                .creatingDate(LocalDate.now().minusDays(1))
+                .cost(200.0)
+                .availability(5)
+                .licenseType(LicenseType.TRAINING)
+                .unusedPeriod(60)
+                .activationDate(LocalDate.now().minusDays(20))
+                .expirationDate(LocalDate.now().plusDays(60))
+                .logo(new byte[]{})
+                .website("http://exampleB.com")
+                .description(DESCRIPTION_B)
+                .currency(Currency.USD)
+                .seatsAvailable(3)
+                .seatsTotal(8)
+                .isRecurring(false)
+                .build();
     }
 
     @Test

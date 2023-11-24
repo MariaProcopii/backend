@@ -3,6 +3,7 @@ package com.training.license.sharing.controllers;
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
 import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.services.LicenseService;
 import com.training.license.sharing.validator.LicenseValidator;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -46,6 +48,16 @@ public class LicenseController {
         licenseValidator.validateNewLicense(licenseDTO);
         licenseService.saveNewLicense(licenseDTO);
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    @GetMapping("/get-all-licenses")
+    public ResponseEntity<List<LicenseSummaryDTO>> getAllLicenses(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "creatingDate") String sortBy
+    ) {
+        List<LicenseSummaryDTO> licenses = licenseService.getAllLicenses(name, sortBy);
+        return ResponseEntity.ok(licenses);
     }
 
 }

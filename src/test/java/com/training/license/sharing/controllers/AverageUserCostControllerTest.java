@@ -1,7 +1,6 @@
 package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.dto.AverageUserCostResponseDTO;
-import com.training.license.sharing.dto.AverageUserCostViewDTO;
 import com.training.license.sharing.dto.DisciplineCostDTO;
 import com.training.license.sharing.services.AverageUserCostService;
 import org.junit.jupiter.api.BeforeEach;
