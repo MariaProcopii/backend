@@ -4,16 +4,15 @@ DELETE FROM Licenses;
 DELETE FROM Requests;
 DELETE FROM UserLicenses;
 
-
 INSERT INTO Credentials(username, password) VALUES ('john.doe@endava.com', 'johndoe');
 INSERT INTO Credentials(username, password) VALUES ('jane.smith@endava.com', 'JaneSmith');
 INSERT INTO Credentials(username, password) VALUES ('steve.brown@endava.com', 'SteveBrown');
 INSERT INTO Credentials(username, password) VALUES ('emma.jones@endava.com', 'EmmaJones');
 
-INSERT INTO Users (name, position, discipline, du, status, last_active) VALUES ('John Doe', 'DEVELOPER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 100);
-INSERT INTO Users (name, position, discipline, du, status, last_active) VALUES ('Jane Smith', 'MANAGER', 'CREATIVE_SERVICES', 'MDD', 'ACTIVE', 376);
-INSERT INTO Users (name, position, discipline, du, status, last_active) VALUES ('Steve Brown', 'MANAGER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 200);
-INSERT INTO Users (name, position, discipline, du, status, last_active) VALUES ('Emma Jones', 'SENIOR_TESTER', 'TESTING', 'MDD', 'ACTIVE', 400);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('John Doe', 'DEVELOPER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 100, 1);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Jane Smith', 'MANAGER', 'CREATIVE_SERVICES', 'MDD', 'ACTIVE', 376, 2);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Steve Brown', 'MANAGER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 200, 3);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Emma Jones', 'SENIOR_TESTER', 'TESTING', 'MDD', 'ACTIVE', 400, 4);
 
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('Postman', 666, 365, 13, 'SOFTWARE', '2023-10-31', '2024-10-31', 'Postman API', 10, 250, false, '2023-10-31');
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('Adobe Suite', 1313, 730, 30, 'SOFTWARE', '2023-11-01', '2024-11-01', 'Adobe Studio API',  10, 250, false, '2023-11-01');
