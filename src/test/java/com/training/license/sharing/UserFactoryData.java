@@ -11,7 +11,7 @@ public class UserFactoryData {
     private UserFactoryData() {
     }
 
-    public static User createTestUser(long id) {
+    public static User createTestUser(long id){
         final User testUser = new User();
         testUser.setName("User" + id);
         testUser.setId(id);

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
 @EnableWebSecurity
 @Configuration
@@ -26,10 +27,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.cors()
+                .configurationSource(request -> {
+                    CorsConfiguration cors = new CorsConfiguration();
+                    cors.applyPermitDefaultValues();
+                    cors.addAllowedOrigin("*");
+                    return cors;
+                })
+                .and()
+                .authorizeRequests()
                 .anyRequest().authenticated()
-                .and().csrf().ignoringRequestMatchers("/**")
-                .and().httpBasic();
+                .and()
+                .csrf().ignoringRequestMatchers("/**")
+                .and()
+                .httpBasic();
         return http.build();
     }
 }
