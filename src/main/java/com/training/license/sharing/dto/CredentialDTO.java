@@ -1,8 +1,6 @@
 package com.training.license.sharing.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.training.license.sharing.entities.enums.Role;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
@@ -13,7 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -21,19 +18,18 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CredentialDTO {
+
     @Email
-    @Pattern(regexp = "[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@endava.com")
+    @Pattern(regexp = "[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@endava.com", message = "It must be @endava.com email ")
     @NotEmpty
-    @JsonProperty("email")
     private String username;
 
     @NotEmpty
-    @Column(name = "password")
-    @Length(min = 5, max = 20)
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{5,20}$",
+            message = "Password might have alphanumerical and special symbols with the size between 5 and 20 symbols")
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
     private Role role;
 
 }

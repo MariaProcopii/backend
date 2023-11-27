@@ -18,6 +18,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.training.license.sharing.validator.ErrorMessagesUtil.ID_NOT_EXIST_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_DO_NOT_HAVE_SEATS_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_EXPIRATION_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_NONEXISTENT_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_NOT_EXIST_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.REJECTED_REQUEST_CAN_NOT_BE_CHANGED_TEMPLATE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.USER_NOT_EXIST_MESSAGE;
+
 @Component
 @NonNullApi
 public class RequestValidator implements Validator {
@@ -48,21 +56,15 @@ public class RequestValidator implements Validator {
     public void validateRequestAccess(Object target, Errors errors) {
         final RequestDTO requestDTO = (RequestDTO) target;
         if (userService.findByNameAndDiscipline(requestDTO.getUsername(), requestDTO.getDiscipline()).isEmpty()) {
-            errors.reject("User with this data does not exist");
+            errors.reject(USER_NOT_EXIST_MESSAGE);
         }
         validateRequestedLicense(errors, requestDTO.getApp(), requestDTO.getStartOfUse());
     }
 
-    private void validateRequestedLicense(Errors errors, String app, LocalDate startOfUse) {
-        final Optional<License> requestedLicenses = licenseService.findByNameAndStartDate(app, startOfUse);
-        requestedLicenses.ifPresentOrElse(license -> {
-                    validateLicenseIsExpiredForRequest(errors, license);
-                    validateExceededNumberOfUsers(errors, license);
-                },
-                () -> errors.reject("License does not exist"));
-    }
-
     public void validateRequestAccessApproval(List<Long> ids, Errors errors) {
+        if (!requestService.isAllRequestIdsExistInDB(ids))
+            errors.reject(ID_NOT_EXIST_MESSAGE);
+
         List<Request> requests = requestService.findAllById(ids);
         List<Request> rejectedRequests = getRejectedRequests(requests);
 
@@ -73,8 +75,13 @@ public class RequestValidator implements Validator {
         requests.forEach(request -> checkIfLicenseIsInvalidForRequest(errors, request.getApp(), request.getStartOfUse()));
     }
 
+    public void validateRequestAccessRejection(List<Long> ids, Errors errors) {
+        if (!requestService.isAllRequestIdsExistInDB(ids))
+            errors.reject(ID_NOT_EXIST_MESSAGE);
+    }
+
     private String buildErrorMessage(List<Request> rejectedRequests) {
-        StringBuilder defaultMessage = new StringBuilder("Rejected request can't be changed. Requests:");
+        StringBuilder defaultMessage = new StringBuilder(REJECTED_REQUEST_CAN_NOT_BE_CHANGED_TEMPLATE);
         rejectedRequests.forEach(request -> defaultMessage.append(request.getApp()).append(" for ")
                 .append(request.getUser().getName()).append(";"));
         return defaultMessage.toString();
@@ -92,24 +99,34 @@ public class RequestValidator implements Validator {
                     validateLicenseIsExpiredForRequest(errors, license);
                     validateExceededNumberOfUsers(errors, license);
                 },
-                () -> errors.reject("License does not exist"));
+                () -> errors.reject(LICENSE_NOT_EXIST_MESSAGE));
     }
 
     private void validateExceededNumberOfUsers(Errors errors, License license) {
         final Long amountOfUsers = licenseService.findNumberOfUsersByLicense(license);
         if (Long.parseLong(userLimitPerLicense) < amountOfUsers) {
-            errors.reject("the training license exceeded the number of users");
+            errors.reject(LICENSE_DO_NOT_HAVE_SEATS_MESSAGE);
         }
     }
 
     private void validateLicenseIsExpiredForRequest(Errors errors, License license) {
         if (!isAvailable(license)) {
-            errors.reject("License is expired");
+            errors.reject(LICENSE_EXPIRATION_MESSAGE);
         }
     }
 
     public static boolean isAvailable(License license) {
         return license.getAvailability() > 0 && license.getUnusedPeriod() == 0;
+    }
+
+
+    private void validateRequestedLicense(Errors errors, String app, LocalDate startOfUse) {
+        final Optional<License> requestedLicenses = licenseService.findByNameAndStartDate(app, startOfUse);
+        requestedLicenses.ifPresentOrElse(license -> {
+                    validateLicenseIsExpiredForRequest(errors, license);
+                    validateExceededNumberOfUsers(errors, license);
+                },
+                () -> errors.reject(LICENSE_NONEXISTENT_MESSAGE));
     }
 
 }

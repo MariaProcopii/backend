@@ -96,6 +96,10 @@ public class RequestService {
                 request.getUser().getDiscipline());
     }
 
+    public boolean isAllRequestIdsExistInDB(List<Long> ids) {
+        return !ids.isEmpty() && ids.stream().allMatch(requestRepository::existsById);
+    }
+
     private boolean isSortableByUsernameOrDiscipline(String field) {
         return Objects.equals(field, "username") || Objects.equals(field, "discipline");
     }

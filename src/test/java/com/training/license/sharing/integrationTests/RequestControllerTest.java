@@ -1,9 +1,7 @@
 package com.training.license.sharing.integrationTests;
 
 import com.training.license.sharing.controllers.RequestController;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.training.license.sharing.util.RequestTestData.AMOUNT_OF_REQUESTS;
 import static com.training.license.sharing.util.RequestTestData.getAllRequestsJson;
@@ -26,8 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -88,7 +85,6 @@ class RequestControllerTest {
     }
 
     @Test
-    @Disabled
     void shouldNotApproveAccessForInvalidInput() throws Exception {
         mockMvc.perform(put("/requests/approve-access")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +103,6 @@ class RequestControllerTest {
     }
 
     @Test
-    @Disabled("need proper exception handling")
     void shouldRejectAccessForInvalidInput() throws Exception {
         mockMvc.perform(put("/requests/reject-access")
                         .contentType(MediaType.APPLICATION_JSON)
