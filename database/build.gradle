@@ -15,7 +15,6 @@ flyway {
     url = 'jdbc:postgresql://localhost:5432/TrainingLicenseSharing'
     user = 'postgres'
     password = 'admin'
-    locations = ['filesystem:src/main/resources/db/migration','filesystem:src/main/resources/db/provisioning']
 }
 
 dependencies {

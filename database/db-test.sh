@@ -1,0 +1,1 @@
+./gradlew flywayClean flywayMigrate -Dflyway.configFiles=./flyway/flyway-test.properties -i
