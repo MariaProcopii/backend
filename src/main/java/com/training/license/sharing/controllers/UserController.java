@@ -1,6 +1,7 @@
 package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.dto.UserDTO;
+import com.training.license.sharing.dto.UsersOverviewDTO;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
@@ -131,6 +132,18 @@ public class UserController {
                                                             @RequestParam(name = "size", defaultValue = "8") int size) {
         return ResponseEntity.ok(userService.getUsersPerDiscipline(page, size));
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/get-users-overview")
+    public ResponseEntity<UsersOverviewDTO> getUsersOverview() {
+        UsersOverviewDTO overview = new UsersOverviewDTO();
+        overview.setTotalUsers(userService.getTotalUsers());
+        overview.setTotalDisciplines(userService.getTotalDisciplines());
+        overview.setDeltaUsers(userService.getNewUsersCountThisMonth());
+        overview.setDisciplines(userService.getDisciplineUserCounts());
+
+        return ResponseEntity.ok(overview);
+    }
+
 
     private Role getRole(String stringRole) {
         return valueOf(stringRole);

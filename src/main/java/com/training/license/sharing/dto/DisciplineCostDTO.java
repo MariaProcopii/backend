@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AverageUserCostViewDTO {
+public class DisciplineCostDTO {
     private String disciplineName;
     private Integer averageCostsUserDiscipline;
 }

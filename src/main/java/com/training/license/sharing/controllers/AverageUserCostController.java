@@ -1,5 +1,6 @@
 package com.training.license.sharing.controllers;
 
+import com.training.license.sharing.dto.AverageUserCostResponseDTO;
 import com.training.license.sharing.dto.AverageUserCostViewDTO;
 import com.training.license.sharing.services.AverageUserCostService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AverageUserCostController {
     private final AverageUserCostService service;
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-average-user-cost")
-    public ResponseEntity<List<AverageUserCostViewDTO>> getAverageUserCost() {
+    public ResponseEntity<AverageUserCostResponseDTO> getAverageUserCost() {
         return ResponseEntity.ok(service.getAverageUserCosts());
     }
 
