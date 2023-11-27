@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class Credential {
 
     @NotEmpty
     @Column(name = "password")
-    @Length(min = 5, max = 20)
+    //@Length(min = 5, max = 20)
     private String password;
 
     @Enumerated(EnumType.STRING)

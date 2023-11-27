@@ -42,8 +42,8 @@ Before you begin, ensure you have the following instaled:
 3. The application will be running on `http://localhost:8080`
 4. Access the various endpoints through a REST client or browser as needed
 5. In Postman choose Basic Auth in Authorization tab, and enter the following credentials: 
-* Username: _admin_ 
-* Password: _admin_
+* Username: _admin@example.com_ 
+* Password: _adminPassword_
 
 6. You can access detailed documentation using Swagger following this link: `http://localhost:8080/swagger-ui/index.html`
 
