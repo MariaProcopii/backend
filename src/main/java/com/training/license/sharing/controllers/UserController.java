@@ -144,7 +144,6 @@ public class UserController {
         return ResponseEntity.ok(overview);
     }
 
-
     private Role getRole(String stringRole) {
         return valueOf(stringRole);
     }

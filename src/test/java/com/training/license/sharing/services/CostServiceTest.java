@@ -3,6 +3,7 @@ package com.training.license.sharing.services;
 import com.training.license.sharing.dto.CostViewDTO;
 import com.training.license.sharing.entities.CostView;
 import com.training.license.sharing.repositories.CostViewRepository;
+import com.training.license.sharing.repositories.MonthlyCostRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,13 +15,17 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CostServiceTest {
 
     @Mock
-    private CostViewRepository repository;
+    private CostViewRepository costViewRepository;
+
+    @Mock
+    private MonthlyCostRepository monthlyCostRepository;
 
     @InjectMocks
     private CostService service;
@@ -28,12 +33,16 @@ class CostServiceTest {
     @Test
     void getCosts_WhenSuccessful_ShouldReturnTotalCosts2022AndDelta() {
         CostView entity = createMockEntity();
-        when(repository.findAll()).thenReturn(Collections.singletonList(entity));
-        List<CostViewDTO> result = service.getCosts();
-        assertThat(result).isNotEmpty();
-        assertThat(result.get(0).getTotalCosts2022()).isEqualTo(entity.getTotalCosts2022());
-        assertThat(result.get(0).getDeltaTotalCosts2022()).isEqualTo(entity.getDeltaTotalCosts2022());
+        when(costViewRepository.findAll()).thenReturn(Collections.singletonList(entity));
+        when(monthlyCostRepository.findAll()).thenReturn(Collections.emptyList());
+
+        CostViewDTO result = service.getCosts();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalCosts2022()).isEqualTo(entity.getTotalCosts2022());
+        assertThat(result.getDeltaTotalCosts2022()).isEqualTo(entity.getDeltaTotalCosts2022());
     }
+
 
     private CostView createMockEntity() {
         return CostView.builder()
@@ -44,29 +53,40 @@ class CostServiceTest {
     }
 
     @Test
-    void getCosts_WhenNoData_ShouldReturnEmptyList() {
-        when(repository.findAll()).thenReturn(Collections.emptyList());
-        List<CostViewDTO> result = service.getCosts();
-        assertThat(result).isEmpty();
+    void getCosts_WhenNoData_ShouldThrowException() {
+        when(costViewRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> service.getCosts()).isInstanceOf(RuntimeException.class);
     }
 
+
     @Test
-    void getCosts_WhenMultipleRecords_ShouldReturnListOfSizeTwo() {
+    void getCosts_WhenMultipleRecords_ShouldReturnFirstRecord() {
         CostView entity1 = createMockEntity();
         CostView entity2 = createMockEntity();
-        when(repository.findAll()).thenReturn(List.of(entity1, entity2));
-        List<CostViewDTO> result = service.getCosts();
-        assertThat(result).hasSize(2);
+        when(costViewRepository.findAll()).thenReturn(List.of(entity1, entity2));
+        when(monthlyCostRepository.findAll()).thenReturn(Collections.emptyList());
+
+        CostViewDTO result = service.getCosts();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalCosts2022()).isEqualTo(entity1.getTotalCosts2022());
+        assertThat(result.getDeltaTotalCosts2022()).isEqualTo(entity1.getDeltaTotalCosts2022());
     }
+
 
     @Test
     void getCosts_WhenFieldsAreNull_ShouldReturnObjectWithNullTotalCosts2022() {
         CostView entity = createMockEntityWithNullFields();
-        when(repository.findAll()).thenReturn(Collections.singletonList(entity));
-        List<CostViewDTO> result = service.getCosts();
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getTotalCosts2022()).isNull();
+        when(costViewRepository.findAll()).thenReturn(Collections.singletonList(entity));
+        when(monthlyCostRepository.findAll()).thenReturn(Collections.emptyList());
+
+        CostViewDTO result = service.getCosts();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalCosts2022()).isNull();
     }
+
 
     private CostView createMockEntityWithNullFields() {
         CostView entity = new CostView();
