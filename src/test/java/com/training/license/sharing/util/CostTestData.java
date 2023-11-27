@@ -13,14 +13,11 @@ public class CostTestData {
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final CostViewDTO COST_VIEW = new CostViewDTO(
-            4200, 0, 2, 0, 2, 0,
-            Arrays.asList(
-                    new MonthCostDTO("January 22", 300),
-                    new MonthCostDTO("February 22", 350)
-            )
+            null, null, 0, 0, 0, 0,
+            List.of()
     );
 
     public static String getCostViewJson() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(List.of(COST_VIEW));
+        return objectMapper.writeValueAsString(COST_VIEW);
     }
 }

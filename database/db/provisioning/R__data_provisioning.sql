@@ -1,8 +1,13 @@
-DELETE FROM Credentials;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE credentials_id_seq RESTART WITH 1;
+ALTER SEQUENCE license_id_seq RESTART WITH 1;
+ALTER SEQUENCE requests_id_seq RESTART WITH 1;
+
+DELETE FROM UserLicenses;
 DELETE FROM Users;
 DELETE FROM Licenses;
 DELETE FROM Requests;
-DELETE FROM UserLicenses;
+DELETE FROM Credentials;
 
 INSERT INTO Credentials(username, password) VALUES ('john.doe@endava.com', 'johndoe');
 INSERT INTO Credentials(username, password) VALUES ('jane.smith@endava.com', 'JaneSmith');
@@ -28,13 +33,6 @@ INSERT INTO Licenses (license_name, cost, availability, unused_period, license_t
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('LinkedIn Learning', 800, 90, 15, 'TRAINING', '2022-07-15', '2022-08-14', 'LinkedIn Learning API', 10, 250, false, '2022-07-15');
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('Codecademy', 1400, 60, 20, 'TRAINING', '2022-08-20', '2022-09-19', 'Codecademy API', 10, 250, false, '2022-08-20');
 
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Udemy', '2023-09-09', 1);
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 2);
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 3);
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 4);
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 2);
-INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 3);
-
 INSERT INTO UserLicenses (user_id, license_id) VALUES (1, 1);
 INSERT INTO UserLicenses (user_id, license_id) VALUES (1, 3);
 INSERT INTO UserLicenses (user_id, license_id) VALUES (2, 2);
@@ -43,5 +41,12 @@ INSERT INTO UserLicenses (user_id, license_id) VALUES (3, 5);
 INSERT INTO UserLicenses (user_id, license_id) VALUES (4, 6);
 INSERT INTO UserLicenses (user_id, license_id) VALUES (3, 7);
 INSERT INTO UserLicenses (user_id, license_id) VALUES (4, 8);
+
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Udemy', '2023-09-09', 1);
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 2);
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 3);
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 4);
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 2);
+INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 3);
 
 COMMIT;

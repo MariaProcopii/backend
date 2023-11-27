@@ -2,16 +2,30 @@ package com.training.license.sharing.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.training.license.sharing.dto.AverageUserCostViewDTO;
+import com.training.license.sharing.dto.AverageUserCostResponseDTO;
+import com.training.license.sharing.dto.DisciplineCostDTO;
 
-import java.util.List;
+import java.util.Collections;
 
 public class AverageUserCostTestData {
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
-    public static final AverageUserCostViewDTO AVERAGE_USER_COST_VIEW = new AverageUserCostViewDTO("TESTING", 750);
+
+    public static final AverageUserCostResponseDTO AVERAGE_USER_COST_RESPONSE = createAverageUserCostResponse();
+
+    private static AverageUserCostResponseDTO createAverageUserCostResponse() {
+        DisciplineCostDTO testing = DisciplineCostDTO.builder()
+                .disciplineName("TESTING")
+                .averageCostsUserDiscipline(700)
+                .build();
+
+        return AverageUserCostResponseDTO.builder()
+                .calculation(750)
+                .disciplineCosts(Collections.singletonList(testing))
+                .build();
+    }
 
     public static String getAverageUserCostViewJson() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(List.of(AVERAGE_USER_COST_VIEW));
+        return objectMapper.writeValueAsString(AVERAGE_USER_COST_RESPONSE);
     }
 }
