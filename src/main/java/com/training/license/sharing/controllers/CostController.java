@@ -21,7 +21,7 @@ public class CostController {
     private final CostService service;
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-cost")
-    public ResponseEntity<List<CostViewDTO>> getCost() {
+    public ResponseEntity<CostViewDTO> getCost() {
         return ResponseEntity.ok(service.getCosts());
     }
 

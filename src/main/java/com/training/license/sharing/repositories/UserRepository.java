@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.discipline, COUNT(u) FROM User u GROUP BY u.discipline")
     Page<Object[]> getUsersPerDiscipline(Pageable pageable);
+
+    @Query("SELECT u.discipline, COUNT(u) FROM User u GROUP BY u.discipline")
+    List<Object[]> getUsersPerDiscipline();
 
     @Query("SELECT u " +
             "FROM User u " +

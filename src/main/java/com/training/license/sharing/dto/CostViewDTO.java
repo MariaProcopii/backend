@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +21,7 @@ public class CostViewDTO {
     private Integer deltaSoftware;
     private Integer trainings;
     private Integer deltaTrainings;
+
+    @Singular("costPerMonth")
+    private List<MonthCostDTO> costsPerMonth;
 }

@@ -6,12 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AverageUserCostViewDTO {
-    private String disciplineName;
-    private Integer averageCostsUserDiscipline;
+public class UsersOverviewDTO {
+    private int totalUsers;
+    private int totalDisciplines;
+    private int deltaUsers;
+    private List<DisciplineUserCountDTO> disciplines;
 }

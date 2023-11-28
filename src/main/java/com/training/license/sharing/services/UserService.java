@@ -1,5 +1,6 @@
 package com.training.license.sharing.services;
 
+import com.training.license.sharing.dto.DisciplineUserCountDTO;
 import com.training.license.sharing.entities.Credential;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
@@ -58,12 +59,11 @@ public class UserService {
 
     public User saveUser(User user, Boolean isNewUserCreation) {
         logInfo("Saving user: " + user.getName());
-        if (isNewUserCreation){
+        if (isNewUserCreation) {
             encodeUserPasswordWithBcrypt(user);
             credentialsService.saveCredential(user.getCredential());
         }
         credentialsService.saveCredential(user.getCredential());
-
         return userRepository.save(user);
     }
 
@@ -152,4 +152,12 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
         user.getCredential().setPassword(encodedPassword);
     }
+
+    public List<DisciplineUserCountDTO> getDisciplineUserCounts() {
+        return userRepository.getUsersPerDiscipline().stream()
+                .filter(obj -> obj[0] != null) // Filter out records with null discipline
+                .map(obj -> new DisciplineUserCountDTO(((Discipline) obj[0]).name(), ((Long) obj[1]).intValue()))
+                .collect(Collectors.toList());
+    }
+
 }
