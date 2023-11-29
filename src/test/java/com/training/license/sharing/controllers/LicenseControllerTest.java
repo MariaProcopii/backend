@@ -1,6 +1,7 @@
 package com.training.license.sharing.controllers;
 
-import com.training.license.sharing.dto.LicenseDTO;
+import com.training.license.sharing.dto.ExpiringLicenseDTO;
+import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.services.LicenseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,8 +39,8 @@ class LicenseControllerTest {
 
     @Test
     void shouldGetExpiringLicenses() throws Exception {
-        final List<LicenseDTO> licenses = new ArrayList<>();
-        licenses.add(new LicenseDTO());
+        final List<ExpiringLicenseDTO> licenses = new ArrayList<>();
+        licenses.add(new ExpiringLicenseDTO());
 
         when(licenseService.getActiveLicenses()).thenReturn(licenses);
 
@@ -50,8 +51,8 @@ class LicenseControllerTest {
 
     @Test
     void shouldGetUnusedLicenses() throws Exception {
-        final List<LicenseDTO> licenses = new ArrayList<>();
-        licenses.add(new LicenseDTO());
+        final List<UnusedLicenseDTO> licenses = new ArrayList<>();
+        licenses.add(new UnusedLicenseDTO());
 
         when(licenseService.getExpiredLicenses()).thenReturn(licenses);
 

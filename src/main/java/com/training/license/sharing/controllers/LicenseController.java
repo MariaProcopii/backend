@@ -1,6 +1,8 @@
 package com.training.license.sharing.controllers;
 
+import com.training.license.sharing.dto.ExpiringLicenseDTO;
 import com.training.license.sharing.dto.LicenseDTO;
+import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.services.LicenseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +23,13 @@ public class LicenseController {
     private final LicenseService licenseService;
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-expiring-licenses")
-    public List<LicenseDTO> getExpiringLicenses() {
+    public List<ExpiringLicenseDTO> getExpiringLicenses() {
         return licenseService.getActiveLicenses();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-unused-licenses")
-    public List<LicenseDTO> getUnusedLicenses() {
+    public List<UnusedLicenseDTO> getUnusedLicenses() {
         return licenseService.getExpiredLicenses();
     }
 
