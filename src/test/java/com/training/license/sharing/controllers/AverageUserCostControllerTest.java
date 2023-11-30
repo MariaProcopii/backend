@@ -1,6 +1,8 @@
 package com.training.license.sharing.controllers;
 
+import com.training.license.sharing.dto.AverageUserCostResponseDTO;
 import com.training.license.sharing.dto.AverageUserCostViewDTO;
+import com.training.license.sharing.dto.DisciplineCostDTO;
 import com.training.license.sharing.services.AverageUserCostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,22 +40,30 @@ class AverageUserCostControllerTest {
 
     @Test
     void getAverageUserCost_WhenSuccessful_ShouldReturnDevelopmentCostData() throws Exception {
-        when(service.getAverageUserCosts()).thenReturn(Collections.singletonList(
-                new AverageUserCostViewDTO(100, "Development", 2000)));
+        AverageUserCostResponseDTO responseDTO = AverageUserCostResponseDTO.builder()
+                .calculation(100)
+                .disciplineCosts(Collections.singletonList(new DisciplineCostDTO("Development", 2000)))
+                .build();
+        when(service.getAverageUserCosts()).thenReturn(responseDTO);
+
         mockMvc.perform(get("/average-user-cost/get-average-user-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].disciplineName").value("Development"))
+                .andExpect(jsonPath("$.calculation").value(100))
+                .andExpect(jsonPath("$.disciplineCosts[0].disciplineName").value("Development"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void getAverageUserCost_WhenNoData_ShouldReturnEmptyResponse() throws Exception {
-        when(service.getAverageUserCosts()).thenReturn(Collections.emptyList());
+        AverageUserCostResponseDTO responseDTO = new AverageUserCostResponseDTO(0, Collections.emptyList());
+        when(service.getAverageUserCosts()).thenReturn(responseDTO);
+
         mockMvc.perform(get("/average-user-cost/get-average-user-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.calculation").value(0))
+                .andExpect(jsonPath("$.disciplineCosts").isEmpty());
     }
 
     @Test

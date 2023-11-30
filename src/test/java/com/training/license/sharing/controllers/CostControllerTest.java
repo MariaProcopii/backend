@@ -1,6 +1,7 @@
 package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.dto.CostViewDTO;
+import com.training.license.sharing.dto.MonthCostDTO;
 import com.training.license.sharing.services.CostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.when;
@@ -38,11 +40,15 @@ class CostControllerTest {
 
     @Test
     void getCost_WhenSuccessful_ShouldReturnCostData2022() throws Exception {
-        when(service.getCosts()).thenReturn(Collections.singletonList(new CostViewDTO(4200, 1900, 2, 1, 2, 1)));
+        CostViewDTO costViewDTO = new CostViewDTO(4200, 1900, 2, 1, 2, 1 , Arrays.asList(
+                new MonthCostDTO("January 22", 300),
+                new MonthCostDTO("February 22", 350)
+        ));
+        when(service.getCosts()).thenReturn(costViewDTO);
         mockMvc.perform(get("/cost/get-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].totalCosts2022").value(4200))
+                .andExpect(jsonPath("$.totalCosts2022").value(4200))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -58,11 +64,10 @@ class CostControllerTest {
 
     @Test
     void getCost_WhenNoData_ShouldReturnEmptyResponse() throws Exception {
-        when(service.getCosts()).thenReturn(Collections.emptyList());
+        when(service.getCosts()).thenReturn(null);
         mockMvc.perform(get("/cost/get-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(jsonPath("$").doesNotExist());
     }
 }
