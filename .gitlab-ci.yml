@@ -23,6 +23,7 @@ test_migration:
     - pg_ctl start -D /var/lib/postgresql/data
   only:
     - main
+    - merge_requests
   script:
     - sudo chmod +x database/db-local.sh && sudo chmod +x gradlew
     - ./database/db-local.sh
