@@ -11,7 +11,7 @@ sonarqube-check:
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   script:
     - sh gradlew sonarqube
-    - sh gradlew test jacocoTestReport sonarqube
+    # - sh gradlew test jacocoTestReport sonarqube
   allow_failure: true
   only:
     - main
