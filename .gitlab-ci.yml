@@ -2,6 +2,17 @@ stages:
     - sonarqube-check
     - test_migration
     - build_image
+    - pre_build
+
+build-only-MR:
+  stage: pre_build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Dockerfile" --no-push
+  only:
+    - merge_requests
 
 sonarqube-check:
   stage: sonarqube-check
@@ -23,7 +34,6 @@ test_migration:
     - pg_ctl start -D /var/lib/postgresql/data
   only:
     - main
-    - merge_requests
   script:
     - sudo chmod +x database/db-local.sh && sudo chmod +x gradlew
     - ./database/db-local.sh
