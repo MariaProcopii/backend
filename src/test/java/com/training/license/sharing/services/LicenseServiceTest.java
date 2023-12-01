@@ -1,6 +1,7 @@
 package com.training.license.sharing.services;
 
-import com.training.license.sharing.dto.LicenseDTO;
+import com.training.license.sharing.dto.ExpiringLicenseDTO;
+import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.License;
 import com.training.license.sharing.repositories.LicenseRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +24,7 @@ import static org.mockito.Mockito.when;
 class LicenseServiceTest {
 
     private static final String ACTIVE_LICENSE_NAME = "Active License";
-    private static final String EXPIRED_LICENSE_NAME = "Active License";
+    private static final String EXPIRED_LICENSE_NAME = "Expired License";
     private static final int EXPECTED_ACTIVE_LICENSES_COUNT = 1;
     private static final int EXPECTED_EXPIRED_LICENSES_COUNT = 1;
 
@@ -30,7 +32,6 @@ class LicenseServiceTest {
     private LicenseRepository licenseRepository;
     @Mock
     private ModelMapper modelMapper;
-
     @InjectMocks
     private LicenseService licenseService;
 
@@ -47,8 +48,9 @@ class LicenseServiceTest {
         return License.builder()
                 .licenseName(ACTIVE_LICENSE_NAME)
                 .cost(100.0)
-                .availability(10)
+                .availability(180)
                 .unusedPeriod(0)
+                .expirationDate(LocalDate.of(2024, 4, 6))
                 .build();
     }
 
@@ -56,8 +58,8 @@ class LicenseServiceTest {
         return License.builder()
                 .licenseName(EXPIRED_LICENSE_NAME)
                 .cost(50.0)
-                .availability(0)
-                .unusedPeriod(5)
+                .unusedPeriod(10)
+                .availability(-1)
                 .build();
     }
 
@@ -65,31 +67,31 @@ class LicenseServiceTest {
     void shouldGetActiveLicenses() {
         when(licenseRepository.findAll()).thenReturn(Arrays.asList(activeLicense, expiredLicense));
 
-        final LicenseDTO activeLicenseDTO = new LicenseDTO();
+        final ExpiringLicenseDTO activeLicenseDTO = new ExpiringLicenseDTO();
         activeLicenseDTO.setName(ACTIVE_LICENSE_NAME);
-        when(modelMapper.map(activeLicense, LicenseDTO.class)).thenReturn(activeLicenseDTO);
+        when(modelMapper.map(activeLicense, ExpiringLicenseDTO.class)).thenReturn(activeLicenseDTO);
 
-        final List<LicenseDTO> result = licenseService.getActiveLicenses();
+        final List<ExpiringLicenseDTO> result = licenseService.getActiveLicenses();
 
         assertThat(result).hasSize(EXPECTED_ACTIVE_LICENSES_COUNT);
         assertThat(result.get(0).getName()).isEqualTo(ACTIVE_LICENSE_NAME);
         verify(licenseRepository).findAll();
-        verify(modelMapper).map(activeLicense, LicenseDTO.class);
+        verify(modelMapper).map(activeLicense, ExpiringLicenseDTO.class);
     }
 
     @Test
     void shouldGetExpiredLicenses() {
         when(licenseRepository.findAll()).thenReturn(Arrays.asList(activeLicense, expiredLicense));
 
-        final LicenseDTO expiredLicenseDTO = new LicenseDTO();
+        final UnusedLicenseDTO expiredLicenseDTO = new UnusedLicenseDTO();
         expiredLicenseDTO.setName(EXPIRED_LICENSE_NAME);
-        when(modelMapper.map(expiredLicense, LicenseDTO.class)).thenReturn(expiredLicenseDTO);
+        when(modelMapper.map(expiredLicense, UnusedLicenseDTO.class)).thenReturn(expiredLicenseDTO);
 
-        final List<LicenseDTO> result = licenseService.getExpiredLicenses();
+        final List<UnusedLicenseDTO> result = licenseService.getExpiredLicenses();
 
         assertThat(result).hasSize(EXPECTED_EXPIRED_LICENSES_COUNT);
         assertThat(result.get(0).getName()).isEqualTo(EXPIRED_LICENSE_NAME);
         verify(licenseRepository).findAll();
-        verify(modelMapper).map(expiredLicense, LicenseDTO.class);
+        verify(modelMapper).map(expiredLicense, UnusedLicenseDTO.class);
     }
 }

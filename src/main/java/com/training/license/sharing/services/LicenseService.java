@@ -1,6 +1,7 @@
 package com.training.license.sharing.services;
 
-import com.training.license.sharing.dto.LicenseDTO;
+import com.training.license.sharing.dto.ExpiringLicenseDTO;
+import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.License;
 import com.training.license.sharing.repositories.LicenseRepository;
 import lombok.AllArgsConstructor;
@@ -20,18 +21,26 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
     private final ModelMapper modelMapper;
 
-    public List<LicenseDTO> getActiveLicenses() {
+    public List<ExpiringLicenseDTO> getActiveLicenses() {
         return licenseRepository.findAll().stream()
                 .filter(this::isAvailable)
-                .map(this::convertToDTO)
+                .map(this::convertToExpiringLicenseDTO)
                 .toList();
     }
 
-    public List<LicenseDTO> getExpiredLicenses() {
+    private ExpiringLicenseDTO convertToExpiringLicenseDTO(License license) {
+        return modelMapper.map(license, ExpiringLicenseDTO.class);
+    }
+
+    public List<UnusedLicenseDTO> getExpiredLicenses() {
         return licenseRepository.findAll().stream()
                 .filter(license -> !isAvailable(license))
-                .map(this::convertToDTO)
+                .map(this::convertToUnusedLicenseDTO)
                 .toList();
+    }
+
+    private UnusedLicenseDTO convertToUnusedLicenseDTO(License license) {
+        return modelMapper.map(license, UnusedLicenseDTO.class);
     }
 
     public Optional<License> findByNameAndStartDate(String licenseName, LocalDate startOfUse) {
@@ -44,12 +53,19 @@ public class LicenseService {
         return licenseRepository.findNumberOfUsersByLicense(license);
     }
 
-    private LicenseDTO convertToDTO(License license) {
-        return modelMapper.map(license, LicenseDTO.class);
-    }
-
     private boolean isAvailable(License license) {
-        return license.getAvailability() >= 0 && license.getUnusedPeriod() == 0;
+        if (license == null) {
+            return false;
+        }
+
+        Integer availability = license.getAvailability();
+        Integer unusedPeriod = license.getUnusedPeriod();
+
+        if (availability == null || unusedPeriod == null) {
+            return false;
+        }
+
+        return availability >= 0 && unusedPeriod == 0;
     }
 
 }
