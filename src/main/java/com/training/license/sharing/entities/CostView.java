@@ -34,12 +34,12 @@ public class CostView {
     private UUID id;
 
     @NotNull
-    @Column(name = "total_costs_2022")
-    private Integer totalCosts2022;
+    @Column(name = "total_costs_2023")
+    private Integer totalCosts2023;
 
     @NotNull
-    @Column(name = "delta_total_costs_2022")
-    private Integer deltaTotalCosts2022;
+    @Column(name = "delta_total_costs_2023")
+    private Integer deltaTotalCosts2023;
 
     @NotNull
     @Column(name = "software")

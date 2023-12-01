@@ -39,16 +39,16 @@ class CostControllerTest {
     }
 
     @Test
-    void getCost_WhenSuccessful_ShouldReturnCostData2022() throws Exception {
+    void getCost_WhenSuccessful_ShouldReturnCostData2023() throws Exception {
         CostViewDTO costViewDTO = new CostViewDTO(4200, 1900, 2, 1, 2, 1 , Arrays.asList(
-                new MonthCostDTO("January 22", 300),
-                new MonthCostDTO("February 22", 350)
+                new MonthCostDTO("January 23", 300),
+                new MonthCostDTO("February 23", 350)
         ));
         when(service.getCosts()).thenReturn(costViewDTO);
         mockMvc.perform(get("/cost/get-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalCosts2022").value(4200))
+                .andExpect(jsonPath("$.totalCosts2023").value(4200))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
