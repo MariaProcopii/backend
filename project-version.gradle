@@ -1,0 +1,8 @@
+def build = System.env["BUILD_NUMBER"]
+group = 'com.training.license.sharing'
+version = rootProject.file("project-version").text.trim()
+if (build) {
+    version += ".${build}"
+} else {
+    version += "-SNAPSHOT"
+}

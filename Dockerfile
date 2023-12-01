@@ -24,7 +24,7 @@ WORKDIR /app
 COPY . .
 
 # Copy the built JAR file from the builder stage
-COPY --from=builder /app/build/libs/training-licenses-sharing-1.0-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/build/libs/training-licenses-sharing-1.3.3-SNAPSHOT.jar ./app.jar
 
 # Give execution rights for gradlew to migrate schemas
 RUN chmod +x gradlew && chmod +x database/db-env.sh
