@@ -20,7 +20,7 @@ public class UserTestData {
     private static final CredentialDTO USER_2_CREDENTIAL = new CredentialDTO("test.user2@gmail.com", "test2", Role.USER);
     public static final UserDTO USER_1 = new UserDTO(1L, "USER_1", Position.DEVELOPER, Discipline.DEVELOPMENT, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_1_CREDENTIAL);
     public static final UserDTO INVALID_USER_1 = new UserDTO(1L, "", Position.DEVELOPER, Discipline.DEVELOPMENT, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_1_CREDENTIAL);
-    public static final UserDTO USER_2 = new UserDTO(2L, "USER_2", Position.MANAGER, Discipline.TESTING, DeliveryUnit.MDD, Status.ACTIVE, 1, USER_2_CREDENTIAL);
+    public static final UserDTO USER_2 = new UserDTO(2L, "USER_2", Position.MANAGER, Discipline.TESTING, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_2_CREDENTIAL);
     public static final int AMOUNT_OF_USERS = 2;
     public static final int AMOUNT_OF_NEW_USERS = 2;
     public static final int AMOUNT_OF_DISCIPLINES = 2;
