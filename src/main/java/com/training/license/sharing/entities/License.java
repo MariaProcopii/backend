@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Types;
 import java.time.LocalDate;
 
 @Getter
@@ -30,7 +33,8 @@ import java.time.LocalDate;
 public class License {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "license_id_seq")
+    @SequenceGenerator(name = "license_id_seq", sequenceName = "license_id_seq", allocationSize = 1)
     private Long id;
 
     @NotNull
@@ -62,16 +66,18 @@ public class License {
     private LocalDate expirationDate;
 
     @Lob
+    @JdbcTypeCode(Types.BINARY)
     @Column(name = "logo", columnDefinition = "bytea")
     private byte[] logo;
 
+    @NotEmpty
     @Column(name = "website")
     private String website;
 
-    @NotEmpty
     @Column(name = "description")
     private String description;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "currency")
     private Currency currency;

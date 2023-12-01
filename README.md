@@ -85,6 +85,44 @@ _Response body:_
 * Fetches a list of licenses that are currently unused.
 * Returns: List of `LicenseDTO` representing unused licenses.
 
+---
+**POST** http://localhost:8080/license/add-new-license
+_Response body:_
+
+```json
+{
+  "licenseName": "Sample License 1",
+  "description": "This is a sample license description with a call-to-action.",
+  "website": "www.sambplelicense.com",
+  "cost": 6.0,
+  "currency": "USD",
+  "availability": 365,
+  "seats": 100,
+  "isActive": true,
+  "expiresOn": "12-May-2023",
+  "licenseType": "TRAINING",
+  "isRecurring": "true",
+  "credentials": [
+    {
+      "username": "john.doe@endava.com",
+      "password": "johndoe"
+    },
+    {
+      "username": "jane.smith@endava.com",
+      "password": "JaneSmith"
+    }
+  ],
+  "logo": ["your logo"]
+}
+```
+* Creates new license
+* Returns HTTP status
+  _Response status:_
+```
+200
+```
+---
+
 ### RequestController
 
 ---

@@ -7,7 +7,6 @@ import com.training.license.sharing.validator.RequestValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -69,9 +68,14 @@ public class RequestController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'REVIEWER')")
     @PutMapping("/reject-access")
-    public ResponseEntity<HttpStatus> rejectAccess(@RequestBody List<Long> ids) {
-        requestService.rejectRequest(ids);
-        return ResponseEntity.ok(OK);
+    public ResponseEntity rejectAccess(@RequestBody List<Long> ids, BindingResult bindingResult) {
+        requestValidator.validateRequestAccessRejection(ids, bindingResult);
+        if (!bindingResult.hasErrors()) {
+            requestService.rejectRequest(ids);
+            return ResponseEntity.ok(OK);
+        }
+        final List<String> errors = getErrorMessageList(bindingResult);
+        return new ResponseEntity<>(errors, BAD_REQUEST);
     }
 
     private static List<String> getErrorMessageList(BindingResult bindingResult) {
