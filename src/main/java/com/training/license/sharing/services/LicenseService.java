@@ -3,9 +3,17 @@ package com.training.license.sharing.services;
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.dto.LicenseDTO;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.entities.Credential;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.entities.License;
+import com.training.license.sharing.entities.enums.Currency;
+import com.training.license.sharing.entities.enums.DurationUnit;
+import com.training.license.sharing.entities.enums.LicenseType;
+import com.training.license.sharing.entities.enums.Currency;
+import com.training.license.sharing.entities.enums.DurationUnit;
+import com.training.license.sharing.entities.enums.LicenseType;
 import com.training.license.sharing.entities.LicenseCredential;
 import com.training.license.sharing.entities.LicenseCredentialKey;
 import com.training.license.sharing.repositories.LicenseCredentialRepository;
@@ -16,9 +24,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.training.license.sharing.util.LoggerUtil.logInfo;
 
@@ -26,6 +41,8 @@ import static com.training.license.sharing.util.LoggerUtil.logInfo;
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class LicenseService {
+
+    private static final String DEFAULT_LOGO_BASE64 = "default-logo-base64-value";
 
     private final LicenseRepository licenseRepository;
     private final ModelMapper modelMapper;
@@ -85,6 +102,13 @@ public class LicenseService {
                 " and " + licenseCredential.getCredential().getUsername());
     }
 
+    private LicenseCredentialKey generateLicenseCredentialKey(License license, Credential credential) {
+        return new LicenseCredentialKey().toBuilder()
+                .credentialId(credential.getId().intValue())
+                .licenseId(license.getId().intValue())
+                .build();
+    }
+
     private LicenseCredential relateLicenseWithCredential(License license, Credential credential) {
         return new LicenseCredential().toBuilder()
                 .credential(credential)
@@ -93,14 +117,7 @@ public class LicenseService {
                 .build();
     }
 
-    private LicenseCredentialKey generateLicenseCredentialKey(License license, Credential credential) {
-        return new LicenseCredentialKey().toBuilder()
-                .credentialId(credential.getId().intValue())
-                .licenseId(license.getId().intValue())
-                .build();
-    }
-
-    private LicenseDTO convertToDTO(License license) {
+    private LicenseDTO convertToLicenseDTO(License license) {
         return modelMapper.map(license, LicenseDTO.class);
     }
 
@@ -135,6 +152,51 @@ public class LicenseService {
         }
 
         return availability >= 0 && unusedPeriod == 0;
+    }
+
+    private LicenseSummaryDTO convertToLicenseSummaryDto(License license) {
+        String logoBase64 = Optional.ofNullable(license.getLogo())
+                .filter(logo -> logo.length > 0)
+                .map(logo -> Base64.getEncoder().encodeToString(logo))
+                .orElse(DEFAULT_LOGO_BASE64);
+
+        return LicenseSummaryDTO.builder()
+                .licenseName(license.getLicenseName())
+                .description(license.getDescription())
+                .cost(license.getCost())
+                .currency(license.getCurrency())
+                .licenseDuration(license.getUnusedPeriod())
+                .durationUnit(determineDurationUnit(license.getUnusedPeriod()))
+                .seatsAvailable(license.getSeatsAvailable())
+                .seatsTotal(license.getSeatsTotal())
+                .isActive(determineActiveStatus(license.getExpirationDate()))
+                .expirationDate(license.getExpirationDate())
+                .licenseType(license.getLicenseType())
+                .isRecurring(license.getIsRecurring())
+                .logo(Arrays.toString(logoBase64.getBytes()))
+                .build();
+    }
+
+    public DurationUnit determineDurationUnit(int days) {
+        return days >= 365 ? DurationUnit.YEAR : DurationUnit.MONTH;
+    }
+
+    private boolean determineActiveStatus(LocalDate expirationDate) {
+        return LocalDate.now().isBefore(expirationDate);
+    }
+
+    public List<LicenseSummaryDTO> getAllLicenses(String name, String sortBy) {
+        Stream<License> licenseStream = licenseRepository.findAll().stream();
+
+        if (name != null && !name.isEmpty()) {
+            licenseStream = licenseStream.filter(license ->
+                    license.getLicenseName().toLowerCase().contains(name.toLowerCase()));
+        }
+
+        return licenseStream
+                .sorted(Comparator.comparing(License::getCreatingDate))
+                .map(this::convertToLicenseSummaryDto)
+                .collect(Collectors.toList());
     }
 
 }

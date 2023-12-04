@@ -86,6 +86,47 @@ _Response body:_
 * Returns: List of `LicenseDTO` representing unused licenses.
 
 ---
+
+**GET** `http://localhost:8080/license/get-all-licenses`
+
+_Response body:_
+```json
+[
+  {
+    "logo": "ZGVmYXVsdC1sb2dvLWJhc2U2NC12YWx1ZQ==",
+    "licenseName": "LinkedIn Learning",
+    "description": "LinkedIn Learning API",
+    "cost": 800.0,
+    "currency": "USD",
+    "licenseDuration": null,
+    "durationUnit": "MONTH",
+    "seatsAvailable": 10,
+    "seatsTotal": 250,
+    "isActive": false,
+    "expirationDate": "2022-10-13",
+    "licenseType": "TRAINING",
+    "isRecurring": false
+  },
+  {
+    "logo": "ZGVmYXVsdC1sb2dvLWJhc2U2NC12YWx1ZQ==",
+    "licenseName": "Codecademy",
+    "description": "Codecademy API",
+    "cost": 1400.0,
+    "currency": "USD",
+    "licenseDuration": null,
+    "durationUnit": "MONTH",
+    "seatsAvailable": 10,
+    "seatsTotal": 250,
+    "isActive": false,
+    "expirationDate": "2022-10-19",
+    "licenseType": "TRAINING",
+    "isRecurring": false
+  }
+]
+```
+* Returns: List of `LicenseSummaryDTO` representing all licenses.
+
+---
 **POST** http://localhost:8080/license/add-new-license
 _Response body:_
 
