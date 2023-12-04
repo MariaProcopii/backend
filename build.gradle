@@ -52,7 +52,7 @@ sonar {
         property 'sonar.projectKey', 'traininglicencesharing_backend_AYwf_zsIq8w_9GkYySv_'
         property 'sonar.projectName', 'Backend'
         property 'sonar.qualitygate.wait', true
-        // property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/jacocoTestReport.xml'
+        property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/jacocoTestReport.xml'
     }
 }
 

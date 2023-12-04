@@ -28,7 +28,7 @@ sonarqube-check:
     - ls -al
     - sh gradlew sonar --warning-mode all
     - sudo chmod +x gradlew && sudo chmod +x database/db-env.sh
-    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && sh gradlew test jacocoTestReport sonarqube
+    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && sh gradlew test jacocoTestReport sonar
   allow_failure: true
   only:
     - main
