@@ -56,12 +56,12 @@ sonar {
     }
 }
 
-subprojects {
-    apply plugin: 'org.sonarqube'
-    sonar {
-        skipProject = true
-    }
-}
+// subprojects {
+//     apply plugin: 'org.sonarqube'
+//     sonar {
+//         skipProject = true
+//     }
+// }
 
 
 jacocoTestReport {
