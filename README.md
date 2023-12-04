@@ -58,10 +58,11 @@ _Response body:_
 ```json
 [
   {
+    "id": 5,
     "name": "JetBrains",
-    "cost": 1444,
+    "cost": 1444.0,
     "availability": 120,
-    "unusedPeriod": 0
+    "expirationDate": "2023-10-04"
   }
 ]
 ```
@@ -75,10 +76,16 @@ _Response body:_
 ```json
 [
   {
+    "id": 1,
     "name": "Postman",
-    "cost": 666,
-    "availability": 365,
+    "cost": 666.0,
     "unusedPeriod": 13
+  },
+  {
+    "id": 2,
+    "name": "Adobe Suite",
+    "cost": 1313.0,
+    "unusedPeriod": 30
   }
 ]
 ```
@@ -93,33 +100,33 @@ _Response body:_
 ```json
 [
   {
-    "logo": "ZGVmYXVsdC1sb2dvLWJhc2U2NC12YWx1ZQ==",
-    "licenseName": "LinkedIn Learning",
-    "description": "LinkedIn Learning API",
+    "logo": "[100, 101, 102, 97, 117, 108, 116, 45, 108, 111, 103, 111, 45, 98, 97, 115, 101, 54, 52, 45, 118, 97, 108, 117, 101]",
+    "licenseName": "Visual Studio",
+    "description": "Visual Studio API",
     "cost": 800.0,
     "currency": "USD",
-    "licenseDuration": null,
+    "licenseDuration": 10,
     "durationUnit": "MONTH",
     "seatsAvailable": 10,
     "seatsTotal": 250,
     "isActive": false,
-    "expirationDate": "2022-10-13",
-    "licenseType": "TRAINING",
+    "expirationDate": "2022-01-10",
+    "licenseType": "SOFTWARE",
     "isRecurring": false
   },
   {
-    "logo": "ZGVmYXVsdC1sb2dvLWJhc2U2NC12YWx1ZQ==",
-    "licenseName": "Codecademy",
-    "description": "Codecademy API",
-    "cost": 1400.0,
+    "logo": "[100, 101, 102, 97, 117, 108, 116, 45, 108, 111, 103, 111, 45, 98, 97, 115, 101, 54, 52, 45, 118, 97, 108, 117, 101]",
+    "licenseName": "Sketch",
+    "description": "Sketch API",
+    "cost": 1200.0,
     "currency": "USD",
-    "licenseDuration": null,
+    "licenseDuration": 15,
     "durationUnit": "MONTH",
     "seatsAvailable": 10,
     "seatsTotal": 250,
     "isActive": false,
-    "expirationDate": "2022-10-19",
-    "licenseType": "TRAINING",
+    "expirationDate": "2022-02-20",
+    "licenseType": "SOFTWARE",
     "isRecurring": false
   }
 ]
@@ -235,6 +242,11 @@ _Request body:_
 ```
 200
 ```
+
+_Response body:_
+```json
+"OK"
+```
 ---
 
 ### RequestController
@@ -249,15 +261,24 @@ _Parameters:_
 _Response body:_
 ```json
 [
-    {
-        "requestId": 2,
-        "status": "PENDING",
-        "app": "JetBrains",
-        "requestDate": "17-Nov-2023 00:00",
-        "startOfUse": "06-Jun-2023",
-        "username": "Jane Smith",
-        "discipline": "CREATIVE_SERVICES"
-    }
+  {
+    "requestId": 2,
+    "status": "PENDING",
+    "app": "JetBrains",
+    "requestDate": "05-Dec-2023 00:00",
+    "startOfUse": "06-Jun-2023",
+    "username": "Jane Smith",
+    "discipline": "CREATIVE_SERVICES"
+  },
+  {
+    "requestId": 3,
+    "status": "PENDING",
+    "app": "JetBrains",
+    "requestDate": "05-Dec-2023 00:00",
+    "startOfUse": "06-Jun-2023",
+    "username": "Steve Brown",
+    "discipline": "DEVELOPMENT"
+  }
 ]
 
 ```
@@ -332,17 +353,50 @@ _Response status:_
 * Retrieves a list of all users in the system.
   _Response body:_
 ```json
-{
-  "name": "Steve Brown",
-  "position": "MANAGER",
-  "discipline": "DEVELOPMENT",
-  "du": "MDD",
-  "status": "ACTIVE",
-  "lastActive": 200,
-  "role": "ADMIN",
-  "email": "steve.brown@example.com",
-  "id": 3
-}
+[
+  {
+    "name": "Admin User",
+    "position": null,
+    "discipline": null,
+    "du": null,
+    "status": null,
+    "lastActive": null,
+    "credential": {
+      "username": "admin@example.com",
+      "password": "$2a$10$mL.haPLgT6l0Z9KYetTQuupR0.OhUKC80JDTffxkblBuv8yCU/cdm",
+      "role": "ADMIN"
+    },
+    "id": 5
+  },
+  {
+    "name": "John Doe",
+    "position": "DEVELOPER",
+    "discipline": "DEVELOPMENT",
+    "du": "MDD",
+    "status": "ACTIVE",
+    "lastActive": 100,
+    "credential": {
+      "username": "john.doe@endava.com",
+      "password": "johndoe",
+      "role": "USER"
+    },
+    "id": 1
+  },
+  {
+    "name": "Jane Smith",
+    "position": "MANAGER",
+    "discipline": "CREATIVE_SERVICES",
+    "du": "MDD",
+    "status": "ACTIVE",
+    "lastActive": 376,
+    "credential": {
+      "username": "jane.smith@endava.com",
+      "password": "JaneSmith",
+      "role": "USER"
+    },
+    "id": 2
+  }
+]
 ```
 _Response status:_
 ```
@@ -398,7 +452,7 @@ _Response body:_
 ```json
 {
   "TESTING": 1,
-  "DEVELOPMENT": 3,
+  "DEVELOPMENT": 2,
   "CREATIVE_SERVICES": 1
 }
 ```
@@ -443,15 +497,18 @@ _Response status:_
 _Response body:_
 ```json
 {
-  "name": "Jane Smith",
-  "position": "MANAGER",
-  "discipline": "CREATIVE_SERVICES",
+  "name": "John Doe",
+  "position": "DEVELOPER",
+  "discipline": "DEVELOPMENT",
   "du": "MDD",
   "status": "ACTIVE",
-  "lastActive": 376,
-  "role": "REVIEWER",
-  "email": "jane.smith@example.com",
-  "id": 2
+  "lastActive": 100,
+  "credential": {
+    "username": "john.doe@endava.com",
+    "password": "johndoe",
+    "role": "USER"
+  },
+  "id": 1
 }
 ```
 _Response status:_
@@ -481,8 +538,11 @@ _Response body:_
     "du": "MDD",
     "status": "INACTIVE",
     "lastActive": 100,
-    "role": "USER",
-    "email": "john.doe@example.com",
+    "credential": {
+      "username": "john.doe@endava.com",
+      "password": "johndoe",
+      "role": "USER"
+    },
     "id": 1
   },
   {
@@ -492,8 +552,11 @@ _Response body:_
     "du": "MDD",
     "status": "INACTIVE",
     "lastActive": 376,
-    "role": "REVIEWER",
-    "email": "jane.smith@example.com",
+    "credential": {
+      "username": "jane.smith@endava.com",
+      "password": "JaneSmith",
+      "role": "USER"
+    },
     "id": 2
   }
 ]
@@ -527,8 +590,11 @@ _Response body:_
     "du": "MDD",
     "status": "INACTIVE",
     "lastActive": 100,
-    "role": "ADMIN",
-    "email": "john.doe@example.com",
+    "credential": {
+      "username": "john.doe@endava.com",
+      "password": "johndoe",
+      "role": "ADMIN"
+    },
     "id": 1
   },
   {
@@ -538,13 +604,46 @@ _Response body:_
     "du": "MDD",
     "status": "INACTIVE",
     "lastActive": 376,
-    "role": "ADMIN",
-    "email": "jane.smith@example.com",
+    "credential": {
+      "username": "jane.smith@endava.com",
+      "password": "JaneSmith",
+      "role": "ADMIN"
+    },
     "id": 2
   }
 ]
 ```
 
+_Response status:_
+```
+200
+```
+---
+
+**GET** `http://localhost:8080/users/get-users-overview`
+
+_Response body:_
+```json
+{
+  "totalUsers": 5,
+  "totalDisciplines": 3,
+  "deltaUsers": 0,
+  "disciplines": [
+    {
+      "name": "CREATIVE_SERVICES",
+      "numberOfUsers": 1
+    },
+    {
+      "name": "TESTING",
+      "numberOfUsers": 1
+    },
+    {
+      "name": "DEVELOPMENT",
+      "numberOfUsers": 2
+    }
+  ]
+}
+```
 _Response status:_
 ```
 200
@@ -560,12 +659,38 @@ _Response status:_
 _Response body:_
 ```json
 {
-  "totalCosts2022": 4200,
-  "deltaTotalCosts2022": 0,
-  "software": 2,
-  "deltaSoftware": 0,
-  "trainings": 2,
-  "deltaTrainings": 0
+  "totalCosts2023": 6427,
+  "deltaTotalCosts2023": 2227,
+  "software": 3,
+  "deltaSoftware": 1,
+  "trainings": 3,
+  "deltaTrainings": 1,
+  "costsPerMonth": [
+    {
+      "month": "Dec 23",
+      "value": 999
+    },
+    {
+      "month": "Jun 23",
+      "value": 1444
+    },
+    {
+      "month": "May 23",
+      "value": 6
+    },
+    {
+      "month": "Nov 23",
+      "value": 1313
+    },
+    {
+      "month": "Oct 23",
+      "value": 666
+    },
+    {
+      "month": "Sep 23",
+      "value": 1999
+    }
+  ]
 }
 ```
 _Response status:_
@@ -580,23 +705,23 @@ _Response status:_
 
 _Response body:_
 ```json
-[
-  {
-    "calculation": 1479,
-    "disciplineName": "CREATIVE_SERVICES",
-    "averageCostsUserDiscipline": 1999
-  },
-  {
-    "calculation": 1479,
-    "disciplineName": "DEVELOPMENT",
-    "averageCostsUserDiscipline": 999
-  },
-  {
-    "calculation": 1479,
-    "disciplineName": "TESTING",
-    "averageCostsUserDiscipline": 700
-  }
-]
+{
+  "calculation": 1480,
+  "disciplineCosts": [
+    {
+      "disciplineName": "CREATIVE_SERVICES",
+      "averageCostsUserDiscipline": 1999
+    },
+    {
+      "disciplineName": "DEVELOPMENT",
+      "averageCostsUserDiscipline": 999
+    },
+    {
+      "disciplineName": "TESTING",
+      "averageCostsUserDiscipline": 700
+    }
+  ]
+}
 ```
 _Response status:_
 ```

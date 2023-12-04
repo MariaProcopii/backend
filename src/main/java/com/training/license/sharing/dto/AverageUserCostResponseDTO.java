@@ -1,5 +1,6 @@
 package com.training.license.sharing.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class AverageUserCostResponseDTO {
+
+    @Schema(description = "calculation", example = "14800")
     private Integer calculation;
+
     private List<DisciplineCostDTO> disciplineCosts;
 }

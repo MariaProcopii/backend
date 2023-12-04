@@ -1,5 +1,6 @@
 package com.training.license.sharing.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class DisciplineUserCountDTO {
+
+    @Schema(description = "name", example = "CREATIVE_SERVICES")
     private String name;
+
+    @Schema(description = "number of users", example = "1")
     private int numberOfUsers;
 }
