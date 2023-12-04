@@ -24,9 +24,9 @@ sonarqube-check:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   script:
-    - sh gradlew sonar --debug | grep -v 'DEBUG'
+    # - sh gradlew sonar
     - sudo chmod +x gradlew && sudo chmod +x database/db-env.sh
-    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && sh gradlew test jacocoTestReport sonar
+    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && sh gradlew test jacocoTestReport sonar && sh gradlew sonar
   allow_failure: true
   only:
     - main
