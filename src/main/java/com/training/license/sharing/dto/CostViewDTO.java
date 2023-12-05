@@ -15,8 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CostViewDTO {
-    private Integer totalCosts2023;
-    private Integer deltaTotalCosts2023;
+    private Integer totalCostsCurrentYear;
+    private Integer deltaTotalCosts;
     private Integer software;
     private Integer deltaSoftware;
     private Integer trainings;
