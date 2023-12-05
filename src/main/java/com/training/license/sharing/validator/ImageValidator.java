@@ -2,6 +2,7 @@ package com.training.license.sharing.validator;
 
 import com.training.license.sharing.util.CustomExceptions.ImageHasIllegalTypeException;
 import com.training.license.sharing.util.CustomExceptions.ImageSizeOutOfBoundsException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -13,6 +14,7 @@ import static com.training.license.sharing.validator.ErrorMessagesUtil.IMAGE_INC
 import static java.util.Objects.isNull;
 
 @Component
+@Log4j2
 public class ImageValidator {
     private static final Map<String, Predicate<byte[]>> IMAGE_TYPES = Map.of(
             "PNG", imageData -> matchesSignature(imageData, new byte[]{(byte) 0x89, 80, 78, 71, 13, 10, 26, 10}),
@@ -22,15 +24,19 @@ public class ImageValidator {
     public void logoImageTypeValidation(String logo) {
         byte[] imageBytes = Base64.getDecoder().decode(logo);
         String type = getImageType(imageBytes);
-        if (isNull(type))
+        if (isNull(type)){
+            log.error(IMAGE_INCORRECT_TYPE_MESSAGE);
             throw new ImageHasIllegalTypeException(IMAGE_INCORRECT_TYPE_MESSAGE);
+        }
     }
 
     public void logoImageSizeValidation(String logo) {
         byte[] imageBytes = Base64.getDecoder().decode(logo);
         double sizeOfImageInMB = (double) imageBytes.length / (1024 * 1024);
-        if (sizeOfImageInMB < 2 || sizeOfImageInMB > 10)
+        if (sizeOfImageInMB < 2 || sizeOfImageInMB > 10){
+            log.error(IMAGE_INCORRECT_SIZE_MESSAGE);
             throw new ImageSizeOutOfBoundsException(IMAGE_INCORRECT_SIZE_MESSAGE);
+        }
     }
 
     private String getImageType(byte[] imageData) {

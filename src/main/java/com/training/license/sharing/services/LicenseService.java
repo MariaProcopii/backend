@@ -9,6 +9,7 @@ import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.Credential;
 import com.training.license.sharing.entities.License;
+import com.training.license.sharing.entities.enums.DurationUnit;
 import com.training.license.sharing.entities.LicenseCredential;
 import com.training.license.sharing.entities.LicenseCredentialKey;
 import com.training.license.sharing.entities.enums.DurationUnit;
@@ -16,6 +17,7 @@ import com.training.license.sharing.repositories.LicenseCredentialRepository;
 import com.training.license.sharing.repositories.LicenseRepository;
 import com.training.license.sharing.util.CredentialConverter;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +31,29 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.training.license.sharing.util.LoggerUtil.logInfo;
+import static com.training.license.sharing.util.InfoMessageUtil.CONVERT_LOGO_TO_BYTES;
+import static com.training.license.sharing.util.InfoMessageUtil.DETERMINE_ACTIVE_STATUS;
+import static com.training.license.sharing.util.InfoMessageUtil.DETERMINE_DURATION_UNIT;
+import static com.training.license.sharing.util.InfoMessageUtil.EDIT_LICENSE;
+import static com.training.license.sharing.util.InfoMessageUtil.FIND_BY_NAME_AND_START_DATE;
+import static com.training.license.sharing.util.InfoMessageUtil.FIND_NUMBER_OF_USERS_BY_LICENSE;
+import static com.training.license.sharing.util.InfoMessageUtil.GENERATE_LICENSE_CREDENTIAL_KEY;
+import static com.training.license.sharing.util.InfoMessageUtil.GET_ACTIVE_LICENSES;
+import static com.training.license.sharing.util.InfoMessageUtil.GET_ALL_LICENSES;
+import static com.training.license.sharing.util.InfoMessageUtil.GET_EXPIRED_LICENSES;
+import static com.training.license.sharing.util.InfoMessageUtil.GET_LICENSE_BY_NAME;
+import static com.training.license.sharing.util.InfoMessageUtil.IS_AVAILABLE;
+import static com.training.license.sharing.util.InfoMessageUtil.LICENSE_CREDENTIAL_RELATION;
+import static com.training.license.sharing.util.InfoMessageUtil.RELATE_LICENSE_WITH_CREDENTIAL;
+import static com.training.license.sharing.util.InfoMessageUtil.RELATE_LICENSE_WITH_CREDENTIALS;
+import static com.training.license.sharing.util.InfoMessageUtil.SAVE_NEW_LICENSE;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 @Transactional(readOnly = true)
 public class LicenseService {
 
@@ -46,17 +66,16 @@ public class LicenseService {
     private final CredentialConverter credentialConverter;
 
     public List<ExpiringLicenseDTO> getActiveLicenses() {
+        log.info(GET_ACTIVE_LICENSES);
         return licenseRepository.findAll().stream()
                 .filter(this::isAvailable)
                 .map(this::convertToExpiringLicenseDTO)
                 .toList();
     }
 
-    public DurationUnit determineDurationUnit(int days) {
-        return days >= 365 ? DurationUnit.YEAR : DurationUnit.MONTH;
-    }
 
     public List<UnusedLicenseDTO> getExpiredLicenses() {
+        log.info(GET_EXPIRED_LICENSES);
         return licenseRepository.findAll().stream()
                 .filter(license -> !isAvailable(license))
                 .map(this::convertToUnusedLicenseDTO)
@@ -64,34 +83,22 @@ public class LicenseService {
     }
 
     public Optional<License> findByNameAndStartDate(String licenseName, LocalDate startOfUse) {
+        log.info(FIND_BY_NAME_AND_START_DATE, licenseName, startOfUse);
         return licenseRepository.findByLicenseName(licenseName, startOfUse)
                 .stream()
                 .findFirst();
     }
 
     public long findNumberOfUsersByLicense(License license) {
+        log.info(FIND_NUMBER_OF_USERS_BY_LICENSE, license.getLicenseName());
         return licenseRepository.findNumberOfUsersByLicense(license);
-    }
-
-    public List<LicenseSummaryDTO> getAllLicenses(String name, String sortBy) {
-        Stream<License> licenseStream = licenseRepository.findAll().stream();
-
-        if (name != null && !name.isEmpty()) {
-            licenseStream = licenseStream.filter(license ->
-                    license.getLicenseName().toLowerCase().contains(name.toLowerCase()));
-        }
-
-        return licenseStream
-                .sorted(Comparator.comparing(License::getCreatingDate))
-                .map(this::convertToLicenseSummaryDto)
-                .collect(Collectors.toList());
     }
 
     @Transactional
     public void saveNewLicense(NewLicenseDTO newLicense) {
         List<Credential> credentials = credentialsService.findByDTOs(newLicense.getCredentials());
         License savedLicense = licenseRepository.save(convertToLicense(newLicense));
-        logInfo("Saving license: " + savedLicense.getLicenseName());
+        log.info(SAVE_NEW_LICENSE, newLicense.getLicenseName());
         relateLicenseWithCredentials(savedLicense, credentials);
     }
 
@@ -101,6 +108,7 @@ public class LicenseService {
     }
 
     public Optional<License> getLicenseByLicenseName(String name) {
+        log.info(GET_LICENSE_BY_NAME, name);
         return licenseRepository.findLicenseByLicenseName(name);
     }
 
@@ -118,6 +126,7 @@ public class LicenseService {
 
     @Transactional
     public void editLicense(LicenseEditingDTO licenseEditingDTO){
+        log.info(EDIT_LICENSE, licenseEditingDTO.getLicenseId());
         License unupdatedLicense = licenseRepository.findById(licenseEditingDTO.getLicenseId()).get();
         License license = convertToLicense(licenseEditingDTO, unupdatedLicense);
         licenseRepository.save(license);
@@ -141,6 +150,7 @@ public class LicenseService {
     }
 
     private void relateLicenseWithCredentials(License license, List<Credential> credentials) {
+        log.info(RELATE_LICENSE_WITH_CREDENTIALS);
         credentials.stream()
                 .map(credential -> relateLicenseWithCredential(license, credential))
                 .peek(licenseCredentialRepository::save)
@@ -156,12 +166,14 @@ public class LicenseService {
     }
 
     private static void logInfoAboutLicenseCredentialRelation(LicenseCredential licenseCredential) {
-        logInfo("Saving licenseCredentials relation between " +
-                licenseCredential.getLicense().getLicenseName() +
-                " and " + licenseCredential.getCredential().getUsername());
+        log.info(LICENSE_CREDENTIAL_RELATION,
+                licenseCredential.getLicense().getLicenseName(),
+                licenseCredential.getCredential().getUsername()
+        );
     }
 
     private LicenseCredentialKey generateLicenseCredentialKey(License license, Credential credential) {
+        log.info(GENERATE_LICENSE_CREDENTIAL_KEY);
         return new LicenseCredentialKey().toBuilder()
                 .credentialId(credential.getId().intValue())
                 .licenseId(license.getId().intValue())
@@ -169,15 +181,12 @@ public class LicenseService {
     }
 
     private LicenseCredential relateLicenseWithCredential(License license, Credential credential) {
+        log.info(RELATE_LICENSE_WITH_CREDENTIAL);
         return new LicenseCredential().toBuilder()
                 .credential(credential)
                 .license(license)
                 .id(generateLicenseCredentialKey(license, credential))
                 .build();
-    }
-
-    private LicenseDTO convertToLicenseDTO(License license) {
-        return modelMapper.map(license, LicenseDTO.class);
     }
 
     private LicenseEditingDTO convertToLicenseEditingDTO(License license, List<CredentialDTO> credentialDTOList) {
@@ -210,10 +219,12 @@ public class LicenseService {
     }
 
     private byte[] convertLogoToBytes(String logo) {
+        log.info(CONVERT_LOGO_TO_BYTES);
         return Objects.nonNull(logo) ? logo.getBytes() : null;
     }
 
     private boolean isAvailable(License license) {
+        log.info(IS_AVAILABLE, license.getId());
         if (license == null) {
             return false;
         }
@@ -251,8 +262,29 @@ public class LicenseService {
                 .build();
     }
 
+    public DurationUnit determineDurationUnit(int days) {
+        log.info(DETERMINE_DURATION_UNIT, days);
+        return days >= 365 ? DurationUnit.YEAR : DurationUnit.MONTH;
+    }
+
     private boolean determineActiveStatus(LocalDate expirationDate) {
+        log.info(DETERMINE_ACTIVE_STATUS, expirationDate);
         return LocalDate.now().isBefore(expirationDate);
+    }
+
+    public List<LicenseSummaryDTO> getAllLicenses(String name, String sortBy) {
+        log.info(GET_ALL_LICENSES, name);
+        Stream<License> licenseStream = licenseRepository.findAll().stream();
+
+        if (name != null && !name.isEmpty()) {
+            licenseStream = licenseStream.filter(license ->
+                    license.getLicenseName().toLowerCase().contains(name.toLowerCase()));
+        }
+
+        return licenseStream
+                .sorted(Comparator.comparing(License::getCreatingDate))
+                .map(this::convertToLicenseSummaryDto)
+                .collect(Collectors.toList());
     }
 
 }

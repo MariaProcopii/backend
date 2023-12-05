@@ -2,7 +2,7 @@ package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.services.UserService;
-import com.training.license.sharing.validator.UserValidation;
+import com.training.license.sharing.validator.ParameterValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Mock
-    private UserValidation userValidation;
+    private ParameterValidator userValidation;
 
     @InjectMocks
     private UserController userController;

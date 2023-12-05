@@ -1,5 +1,6 @@
 package com.training.license.sharing.integrationTests;
 
+import com.training.license.sharing.controllers.GlobalExceptionHandler;
 import com.training.license.sharing.controllers.UserController;
 
 import static com.training.license.sharing.util.UserTestData.AMOUNT_OF_DISCIPLINES;
@@ -47,9 +48,12 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
+    @Autowired
+    private GlobalExceptionHandler globalExceptionHandler;
+
     @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(userController, globalExceptionHandler).build();
     }
 
     @Test
@@ -113,7 +117,7 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/users/deactivate-user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getListInvalidUserIdJson()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -137,7 +141,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("role", role)
                         .content(getListInvalidUserIdJson()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test

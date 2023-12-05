@@ -22,7 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     int countByLastActiveLessThan(int currentDayOfMonth);
 
-    @Query("SELECT u.discipline, COUNT(u) FROM User u GROUP BY u.discipline")
+    @Query("SELECT u.discipline, COUNT(u) FROM User u WHERE u.discipline " +
+            "IS NOT NULL GROUP BY u.discipline")
     Page<Object[]> getUsersPerDiscipline(Pageable pageable);
 
     @Query("SELECT u.discipline, COUNT(u) FROM User u GROUP BY u.discipline")

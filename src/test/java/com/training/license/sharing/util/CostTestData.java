@@ -16,6 +16,8 @@ public class CostTestData {
             2944, null, 1, 1, 2, 2,
             List.of(MONTH_DTO1 , MONTH_DTO2)
     );
+    public final static String EXCEPTION_MESSAGE_JSON = "{\"invalid json\":\"" + "Service exception" + "\"}";
+    public final static String EXCEPTION_MESSAGE = "Service exception";
 
     public static String getCostViewJson() throws JsonProcessingException {
         return objectMapper.writeValueAsString(COST_VIEW);

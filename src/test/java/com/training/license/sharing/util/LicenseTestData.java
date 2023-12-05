@@ -70,7 +70,7 @@ public class LicenseTestData {
 
     private static String generateIncorrectCredentialJson(CredentialDTO credentialDTO) {
         return "{\n" +
-                "    \"credentials\": \"User(" + credentialDTO.getUsername() + ") with this credentials does not exist\"\n" +
+                "    \"credentials\": \"User " + credentialDTO.getUsername() + " with this credentials does not exist\"\n" +
                 "}";
     }
 

@@ -1,7 +1,6 @@
 package com.training.license.sharing.util;
 
 import org.slf4j.Logger;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class LoggerUtil {
@@ -14,4 +13,5 @@ public class LoggerUtil {
     public static void logInfo(String message) {
         logger.info(message);
     }
+
 }

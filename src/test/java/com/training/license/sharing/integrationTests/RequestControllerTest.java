@@ -1,5 +1,6 @@
 package com.training.license.sharing.integrationTests;
 
+import com.training.license.sharing.controllers.GlobalExceptionHandler;
 import com.training.license.sharing.controllers.RequestController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,10 +41,13 @@ class RequestControllerTest {
     @Autowired
     private RequestController requestController;
 
+    @Autowired
+    private GlobalExceptionHandler globalExceptionHandler;
+
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(requestController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(requestController, globalExceptionHandler).build();
     }
 
     @Test

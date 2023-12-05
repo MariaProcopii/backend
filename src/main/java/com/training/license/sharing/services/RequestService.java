@@ -6,6 +6,7 @@ import com.training.license.sharing.entities.License;
 import com.training.license.sharing.entities.Request;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.repositories.RequestRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,18 @@ import java.util.Optional;
 import static com.training.license.sharing.entities.enums.RequestStatus.APPROVED;
 import static com.training.license.sharing.entities.enums.RequestStatus.PENDING;
 import static com.training.license.sharing.entities.enums.RequestStatus.REJECTED;
+import static com.training.license.sharing.util.InfoMessageUtil.APPROVE_REQUEST;
+import static com.training.license.sharing.util.InfoMessageUtil.EXPIRED_LICENSE_CHECK;
+import static com.training.license.sharing.util.InfoMessageUtil.FETCH_AND_VALIDATE_REQUESTS;
+import static com.training.license.sharing.util.InfoMessageUtil.FIND_ALL_REQUESTS;
+import static com.training.license.sharing.util.InfoMessageUtil.LICENSE_EXPIRY_CHECK;
+import static com.training.license.sharing.util.InfoMessageUtil.REJECTING_REQUEST;
+import static com.training.license.sharing.util.InfoMessageUtil.REJECT_REQUEST;
+import static com.training.license.sharing.util.InfoMessageUtil.REQUEST_ACCESS;
 import static com.training.license.sharing.validator.RequestValidator.isAvailable;
 
 @Service
+@Log4j2
 public class RequestService {
 
     private final RequestRepository requestRepository;
@@ -36,6 +46,7 @@ public class RequestService {
     }
 
     public List<UserRequestDTO> findAll(Boolean asc, String field) {
+        log.info(FIND_ALL_REQUESTS, asc, field);
         asc = Objects.requireNonNullElse(asc, false);
         field = Objects.requireNonNullElse(field, "id");
 
@@ -52,6 +63,7 @@ public class RequestService {
 
     @Transactional
     public void approveRequest(List<Long> ids) {
+        log.info(APPROVE_REQUEST, ids);
         findAllById(ids).stream()
                 .filter(request -> Objects.equals(request.getStatus(), PENDING))
                 .forEach(request -> {
@@ -62,6 +74,7 @@ public class RequestService {
 
     @Transactional
     public void rejectRequest(List<Long> ids) {
+        log.info(REJECT_REQUEST, ids);
         findAllById(ids).stream()
                 .filter(request -> !Objects.equals(request.getStatus(), REJECTED))
                 .forEach(request -> {
@@ -71,6 +84,7 @@ public class RequestService {
     }
 
     public void requestAccess(RequestDTO dto) {
+        log.info(REQUEST_ACCESS, dto.getUsername(), dto.getDiscipline());
         final User user = userService.findByNameAndDiscipline(dto.getUsername(), dto.getDiscipline()).get();
         requestRepository.save(Request.builder().id(0L)
                 .user(user)
@@ -126,11 +140,13 @@ public class RequestService {
     }
 
     private void fetchAndValidateRequests() {
+        log.info(FETCH_AND_VALIDATE_REQUESTS);
         List<Request> requests = requestRepository.findAll();
         requests.forEach(this::findExpiredLicenseForRequestAndRejectIt);
     }
 
     private void findExpiredLicenseForRequestAndRejectIt(Request request) {
+        log.info(EXPIRED_LICENSE_CHECK, request.getId());
         Optional<License> licenseOptional = licenseService.findByNameAndStartDate(request.getApp(), request.getStartOfUse());
         if (licenseOptional.isPresent()) {
             License license = licenseOptional.get();
@@ -141,10 +157,12 @@ public class RequestService {
     }
 
     private boolean isLicenseExpired(License license) {
+        log.info(LICENSE_EXPIRY_CHECK, license.getId());
         return !isAvailable(license) || licenseService.findNumberOfUsersByLicense(license) >= 10;
     }
 
     private void rejectRequest(Request request) {
+        log.info(REJECTING_REQUEST, request.getId());
         request.setStatus(REJECTED);
         requestRepository.save(request);
     }
