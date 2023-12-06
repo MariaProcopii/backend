@@ -1,6 +1,7 @@
 package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
+import com.training.license.sharing.dto.LicenseEditingDTO;
 import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.License;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.training.license.sharing.util.NewLicenseTestData.CORRECT_NEW_LICENSE;
 import static com.training.license.sharing.util.NewLicenseTestData.CORRECT_NEW_LICENSE_DTO;
@@ -61,11 +63,15 @@ class LicenseServiceTest {
 
     private License activeLicense;
     private License expiredLicense;
+    private LicenseEditingDTO licenseEditingDTOTest;
 
     @BeforeEach
     void setUp() {
         activeLicense = createActiveLicense();
         expiredLicense = createExpiredLicense();
+        licenseEditingDTOTest = new LicenseEditingDTO().toBuilder()
+                .licenseId(1L)
+                .build();
     }
 
     private License createActiveLicense() {
@@ -194,6 +200,25 @@ class LicenseServiceTest {
         verify(licenseRepository, times(1)).save(any());
         verify(credentialsService, times(1)).findByDTOs(any());
         verify(licenseCredentialRepository, times(TEST_CREDENTIALS_LIST.size())).save(any());
+    }
+
+    @Test
+    void getLicenseEditingDTOByNameCallsRepository(){
+        licenseService.getLicenseEditingDTOByName(any());
+        verify(licenseRepository).findLicenseByLicenseName(any());
+    }
+
+    @Test
+    void editLicenseCallsSaveAndRelatesMethods(){
+        when(licenseRepository.findById(any())).thenReturn(Optional.of(new License()));
+        when(modelMapper.map(any(),any())).thenReturn(new License());
+
+        licenseService.editLicense(licenseEditingDTOTest);
+
+        verify(licenseRepository).save(any());
+        verify(modelMapper).map(any(),any());
+        verify(licenseCredentialRepository).deleteAllByLicenseId(any());
+        verify(credentialsService).findByDTOs(any());
     }
 
 }

@@ -8,6 +8,7 @@ DELETE FROM Users;
 DELETE FROM Licenses;
 DELETE FROM Requests;
 DELETE FROM Credentials;
+DELETE FROM LicenseCredentials;
 
 INSERT INTO Credentials(username, password) VALUES ('john.doe@endava.com', 'johndoe');
 INSERT INTO Credentials(username, password) VALUES ('jane.smith@endava.com', 'JaneSmith');
@@ -60,5 +61,19 @@ INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-0
 INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 4);
 INSERT INTO Requests(app, start_of_use, user_id) VALUES ('Postman', '2023-10-31', 2);
 INSERT INTO Requests(app, start_of_use, user_id) VALUES ('JetBrains', '2023-06-06', 3);
+
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (1, 1);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (2, 2);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (3, 3);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (4, 4);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (1, 5);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (2, 6);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (3, 7);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (4, 8);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (1, 9);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (2, 10);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (3, 11);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (4, 12);
+INSERT INTO LicenseCredentials(id_credential, id_license) VALUES (1, 13);
 
 COMMIT;

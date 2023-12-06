@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,4 +23,6 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
             "FROM UserLicense ul " +
             "WHERE ul.license.id = :#{#license.id}")
     Long findNumberOfUsersByLicense(@Param("license") License license);
+
+    Optional<License> findLicenseByLicenseName(String name);
 }
