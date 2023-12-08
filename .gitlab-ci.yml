@@ -8,13 +8,13 @@ stages:
 
 pre_build:
   stage: pre_build
-  image: dmoscalu/pgjdk17:latest
+  image: dmoscalu/ubungres16:latest
   before_script:
     - sudo chmod +x gradlew && sudo chmod +x database/db-env.sh #&& ./database/db-env.sh #pg_ctl start -D /var/lib/postgresql/data
   only:
     - merge_requests
   script:
-    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && ./gradlew clean build #sudo chmod +x database/db-local.sh && sudo chmod +x gradlew
+    - service postgresql start && ./database/db-env.sh && ./gradlew clean build #sudo chmod +x database/db-local.sh && sudo chmod +x gradlew
 
 
 sonarqube-check:
