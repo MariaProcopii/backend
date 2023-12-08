@@ -1,4 +1,4 @@
-CREATE VIEW monthly_costs_view AS
+CREATE OR REPLACE VIEW monthly_costs_view AS
 SELECT
     TO_CHAR(activation_date, 'Mon YY') AS month,
     SUM(cost) AS value
