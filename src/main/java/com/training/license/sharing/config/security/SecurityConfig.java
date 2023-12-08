@@ -16,8 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @EnableWebSecurity
 @Configuration
@@ -50,8 +51,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        List<String> adminPaths = Arrays.asList(adminEndpoints.split(","));
-        List<String> adminReviewerPaths = Arrays.asList(adminReviewerEndpoints.split(","));
+        List<String> adminPaths = asList(adminEndpoints.split(","));
+        List<String> adminReviewerPaths = asList(adminReviewerEndpoints.split(","));
 
         http
                 .cors()
