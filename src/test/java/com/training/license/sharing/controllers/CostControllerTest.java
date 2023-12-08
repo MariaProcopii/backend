@@ -48,7 +48,7 @@ class CostControllerTest {
         mockMvc.perform(get("/cost/get-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalCosts2023").value(4200))
+                .andExpect(jsonPath("$.totalCostsCurrentYear").value(4200))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 

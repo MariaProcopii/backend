@@ -39,16 +39,16 @@ class CostServiceTest {
         CostViewDTO result = service.getCosts();
 
         assertThat(result).isNotNull();
-        assertThat(result.getTotalCosts2023()).isEqualTo(entity.getTotalCosts2023());
-        assertThat(result.getDeltaTotalCosts2023()).isEqualTo(entity.getDeltaTotalCosts2023());
+        assertThat(result.getTotalCostsCurrentYear()).isEqualTo(entity.getTotalCostsCurrentYear());
+        assertThat(result.getDeltaTotalCosts()).isEqualTo(entity.getDeltaTotalCosts());
     }
 
 
     private CostView createMockEntity() {
         return CostView.builder()
                 .id(UUID.randomUUID())
-                .totalCosts2023(4200)
-                .deltaTotalCosts2023(1900)
+                .totalCostsCurrentYear(4200)
+                .deltaTotalCosts(1900)
                 .build();
     }
 
@@ -70,8 +70,8 @@ class CostServiceTest {
         CostViewDTO result = service.getCosts();
 
         assertThat(result).isNotNull();
-        assertThat(result.getTotalCosts2023()).isEqualTo(entity1.getTotalCosts2023());
-        assertThat(result.getDeltaTotalCosts2023()).isEqualTo(entity1.getDeltaTotalCosts2023());
+        assertThat(result.getTotalCostsCurrentYear()).isEqualTo(entity1.getTotalCostsCurrentYear());
+        assertThat(result.getDeltaTotalCosts()).isEqualTo(entity1.getDeltaTotalCosts());
     }
 
 
@@ -84,7 +84,7 @@ class CostServiceTest {
         CostViewDTO result = service.getCosts();
 
         assertThat(result).isNotNull();
-        assertThat(result.getTotalCosts2023()).isNull();
+        assertThat(result.getTotalCostsCurrentYear()).isNull();
     }
 
 

@@ -36,8 +36,8 @@ public class CostService {
                 .collect(Collectors.toList());
 
         return CostViewDTO.builder()
-                .totalCosts2023(costView.getTotalCosts2023())
-                .deltaTotalCosts2023(costView.getDeltaTotalCosts2023())
+                .totalCostsCurrentYear(costView.getTotalCostsCurrentYear())
+                .deltaTotalCosts(costView.getDeltaTotalCosts())
                 .software(costView.getSoftware())
                 .deltaSoftware(costView.getDeltaSoftware())
                 .trainings(costView.getTrainings())
