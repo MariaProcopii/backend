@@ -19,27 +19,27 @@ pre_build:
 
 sonarqube-check:
   stage: sonarqube-check
-  image: dmoscalu/pgjdk17:latest #gradle:8.2.0-jdk17-jammy
+  image: dmoscalu/ubungres16:latest #gradle:8.2.0-jdk17-jammy
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   script:
     # - sh gradlew sonar
     - sudo chmod +x gradlew && sudo chmod +x database/db-env.sh
-    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh && sh gradlew test jacocoTestReport sonar && sh gradlew sonar
+    - service postgresql start && ./database/db-env.sh && sh gradlew test jacocoTestReport sonar && sh gradlew sonar
   allow_failure: true
   only:
     - main
 
 test_migration:
   stage: test_migration
-  image: dmoscalu/pgjdk17:latest
+  image: dmoscalu/ubungres16:latest
   before_script:
     - sudo chmod +x gradlew && sudo chmod +x database/db-env.sh
   only:
     - main
   script:
-    - pg_ctl start -D /var/lib/postgresql/data && ./database/db-env.sh
+    - service postgresql start && ./database/db-env.sh
 
 build-backend:
   stage: build_image
@@ -50,6 +50,8 @@ build-backend:
     - echo "{\"auths\":{\"$NEXUS_URL\":{\"auth\":\"$(echo -n $NEXUS_USER:$NEXUS_PASS | base64)\"}}}"> /kaniko/.docker/config.json
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Dockerfile" --destination "$NEXUS_TLS:${CI_COMMIT_SHA}" #${CI_COMMIT_REF_SLUG}
   needs: [test_migration]
+  only:
+    - main
 
 tagging:
   stage: tagging
