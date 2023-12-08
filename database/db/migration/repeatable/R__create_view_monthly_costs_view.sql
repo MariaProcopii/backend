@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS monthly_costs_view;
 CREATE OR REPLACE VIEW monthly_costs_view AS
 SELECT
     TO_CHAR(activation_date, 'Mon YY') AS month,
