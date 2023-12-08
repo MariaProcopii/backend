@@ -19,4 +19,10 @@ public class ErrorMessagesUtil {
     public static String IMAGE_INCORRECT_TYPE_MESSAGE = "Image must have JPEG/JPG/PNG type";
 
     public static String IMAGE_INCORRECT_SIZE_MESSAGE = "Logo Image Size must be be between 2 and 10 MB";
+
+    public static String LICENSE_WITH_NAME_NON_EXISTENT_MESSAGE = "License with this name does not exist!";
+
+    public static String LICENSE_WITH_NAME_ALREADY_EXIST_MESSAGE = "License with this name is already exists";
+
+    public static final String LICENSE_WITH_ID_NON_EXISTENT_MESSAGE = "License with this id does not exist";
 }

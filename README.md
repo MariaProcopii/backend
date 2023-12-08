@@ -128,7 +128,7 @@ _Response body:_
 
 ---
 **POST** http://localhost:8080/license/add-new-license
-_Response body:_
+_Request body:_
 
 ```json
 {
@@ -158,6 +158,79 @@ _Response body:_
 ```
 * Creates new license
 * Returns HTTP status
+  _Response status:_
+```
+200
+```
+**GET** `http://localhost:8080/license/get-license?name=Postman`
+
+_Parameters:_
+* name (String): Mandatory parameter to get license data from database. If License name has whitespace, It should be replaced by "%20" 
+
+_Response body:_
+```json
+{
+    "licenseId": 1,
+    "licenseName": "Postman",
+    "website": null,
+    "description": "Postman API",
+    "logo": null,
+    "credentials": [
+        {
+            "username": "john.doe@endava.com",
+            "password": "johndoe",
+            "role": "USER"
+        }
+    ],
+    "cost": 666.0,
+    "currency": "USD",
+    "availability": 365,
+    "isRecurring": false,
+    "seatsTotal": 250,
+    "seatsAvailable": 10,
+    "licenseType": "SOFTWARE",
+    "expiresOn": "31-Oct-2023"
+}
+
+```
+* Returns HTTP status OK and License data from database 
+  _Response status:_
+```
+200
+```
+
+**PUT** http://localhost:8080/license/edit-license
+_Request body:_
+```json
+{
+  "licenseId" : 1,
+  "licenseName": "Edited Postman License",
+  "description": "This is a sample license description with a call-to-action.",
+  "website" : "www.sambplelicense.com",
+  "cost" : 6.0,
+  "currency": "USD",
+  "availability": 365,
+  "seatsTotal": 100,
+  "seatsAvailable" : 98,
+  "isActive": true,
+  "expiresOn": "12-May-2023",
+  "licenseType": "TRAINING",
+  "isRecurring": "true",
+  "credentials" : [
+    {
+      "username" : "john.doe@endava.com",
+      "password" : "johndoe"
+    },
+    {
+      "username" : "jane.smith@endava.com",
+      "password" : "JaneSmith"
+    }
+  ],
+  "logo" : null
+}
+```
+* Edit License data in database
+* Returns HTTP status OK 
   _Response status:_
 ```
 200

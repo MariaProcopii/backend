@@ -19,7 +19,7 @@ public class NewLicenseTestData {
 
     public static String CORRECT_LOGO;
 
-    private static final String INCORRECT_SIZE_IMAGE_IN_BASE64_CODE;
+    public static final String INCORRECT_SIZE_IMAGE_IN_BASE64_CODE;
 
     static {
         Properties properties = new Properties();
@@ -113,11 +113,11 @@ public class NewLicenseTestData {
                 "}";
     }
 
-    private static List<String> toJsonList(List<CredentialDTO> credentialDTOS) {
+    public static List<String> toJsonList(List<CredentialDTO> credentialDTOS) {
         return credentialDTOS.stream().map(NewLicenseTestData::toJson).toList();
     }
 
-    private static String toJson(CredentialDTO credentialDTO) {
+    public static String toJson(CredentialDTO credentialDTO) {
         return "{ \"username\" : \"" + credentialDTO.getUsername() + "\", \"password\" : \"" + credentialDTO.getPassword() + "\"}";
     }
 }
