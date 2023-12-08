@@ -1,4 +1,4 @@
-CREATE VIEW cost_view AS
+CREATE OR REPLACE VIEW cost_view AS
 SELECT
     (SELECT SUM(cost) FROM Licenses WHERE EXTRACT(YEAR FROM activation_date) = EXTRACT(YEAR FROM CURRENT_DATE)) AS total_costs_current_year,
     (SELECT SUM(cost) FROM Licenses WHERE EXTRACT(YEAR FROM activation_date) = EXTRACT(YEAR FROM CURRENT_DATE)) -
