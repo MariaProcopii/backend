@@ -37,7 +37,7 @@ public class NewLicenseTestData {
 
     public static final List<CredentialDTO> INCORRECT_CREDENTIALS_DTO_LIST = List.of(new CredentialDTO("INCORRECT@endava.com", "password", null));
 
-    public static final List<CredentialDTO> TEST_CREDENTIALS_DTO_LIST = List.of(new CredentialDTO("test.user1@gmail.com", "test1", Role.USER));
+    public static final List<CredentialDTO> TEST_CREDENTIALS_DTO_LIST = List.of(new CredentialDTO("test.user1@endava.com", "test1", Role.USER));
 
     public static final NewLicenseDTO INCORRECT_TYPE_OF_IMAGE_NEW_LICENSE_DTO = getNewLicenseDTO(INCORRECT_TYPE_IMAGE_IN_BASE64_CODE, TEST_CREDENTIALS_DTO_LIST);
 

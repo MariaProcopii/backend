@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class UserTestData {
-    private static final CredentialDTO USER_1_CREDENTIAL = new CredentialDTO("test.user1@gmail.com", "test1", Role.USER);
-    private static final CredentialDTO USER_2_CREDENTIAL = new CredentialDTO("test.user2@gmail.com", "test2", Role.USER);
+    private static final CredentialDTO USER_1_CREDENTIAL = new CredentialDTO("test.user1@endava.com", "test1", Role.USER);
+    private static final CredentialDTO USER_2_CREDENTIAL = new CredentialDTO("test.user2@endava.com", "test2", Role.USER);
     public static final UserDTO USER_1 = new UserDTO(1L, "USER_1", Position.DEVELOPER, Discipline.DEVELOPMENT, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_1_CREDENTIAL);
     public static final UserDTO INVALID_USER_1 = new UserDTO(1L, "", Position.DEVELOPER, Discipline.DEVELOPMENT, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_1_CREDENTIAL);
     public static final UserDTO USER_2 = new UserDTO(2L, "USER_2", Position.MANAGER, Discipline.TESTING, DeliveryUnit.MDD, Status.ACTIVE, 0, USER_2_CREDENTIAL);
@@ -38,7 +38,7 @@ public class UserTestData {
 
     public static String newUserToSaveJson() throws JsonProcessingException {
         final UserDTO saveUser = USER_1;
-        USER_1.getCredential().setUsername("test.user3@gmail.com");
+        USER_1.getCredential().setUsername("test.user3@endava.com");
         USER_1.getCredential().setPassword("test1");
         return new ObjectMapper().writeValueAsString(saveUser);
     }

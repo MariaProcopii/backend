@@ -9,6 +9,7 @@ import com.training.license.sharing.util.CustomExceptions.CredentialsNonExistent
 import com.training.license.sharing.util.CustomExceptions.LicenseExistentByIdException;
 import com.training.license.sharing.util.CustomExceptions.LicenseExistentByNameException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,10 +17,13 @@ import java.util.Optional;
 
 import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_WITH_ID_NON_EXISTENT_MESSAGE;
 import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_WITH_NAME_ALREADY_EXIST_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.LICENSE_WITH_NAME_NON_EXISTENT_MESSAGE;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.USER_NOT_EXIST_FOR_CREDENTIAL;
 import static java.util.Objects.nonNull;
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class LicenseValidator {
 
 
@@ -41,22 +45,27 @@ public class LicenseValidator {
     }
 
     private void validateLicenseId(Long licenseId) {
-        if(!licenseService.doesLicenseExistById(licenseId))
+        if(!licenseService.doesLicenseExistById(licenseId)){
+            log.error(LICENSE_WITH_ID_NON_EXISTENT_MESSAGE);
             throw new LicenseExistentByIdException(LICENSE_WITH_ID_NON_EXISTENT_MESSAGE);
+        }
     }
 
     public LicenseEditingDTO getValidatedLicenseEditingDTOByName(String name){
         Optional<LicenseEditingDTO> licenseEditingDTOOptional = licenseService.getLicenseEditingDTOByName(name);
 
-        if (licenseEditingDTOOptional.isEmpty())
-            throw new LicenseExistentByNameException(ErrorMessagesUtil.LICENSE_WITH_NAME_NON_EXISTENT_MESSAGE);
-
+        if (licenseEditingDTOOptional.isEmpty()){
+            log.error(LICENSE_WITH_NAME_NON_EXISTENT_MESSAGE);
+            throw new LicenseExistentByNameException(LICENSE_WITH_NAME_NON_EXISTENT_MESSAGE);
+        }
         return licenseEditingDTOOptional.get();
     }
 
     private void validateLicenseName(String licenseName, Long exceptedId) {
-        if (licenseService.doesLicenseExistByNameExceptId(licenseName, exceptedId))
+        if (licenseService.doesLicenseExistByNameExceptId(licenseName, exceptedId)){
+            log.error(LICENSE_WITH_NAME_ALREADY_EXIST_MESSAGE);
             throw new LicenseExistentByNameException(LICENSE_WITH_NAME_ALREADY_EXIST_MESSAGE);
+        }
     }
 
     private void validateImage(String logo) {
@@ -69,9 +78,9 @@ public class LicenseValidator {
     private void validateUserByCredentials(List<CredentialDTO> credentialDTOS) {
         credentialDTOS.forEach(credentialDTO -> {
             if (!credentialsService.existsByUsernameAndPassword(credentialDTO.getUsername(), credentialDTO.getPassword())) {
-                throw new CredentialsNonExistentException(String.format("User(%s) with this credentials does not exist", credentialDTO.getUsername()));
+                log.error(String.format(USER_NOT_EXIST_FOR_CREDENTIAL, credentialDTO.getUsername()));
+                throw new CredentialsNonExistentException(String.format(USER_NOT_EXIST_FOR_CREDENTIAL, credentialDTO.getUsername()));
             }
         });
     }
-
 }

@@ -5,11 +5,9 @@ import com.training.license.sharing.dto.UsersOverviewDTO;
 import com.training.license.sharing.entities.User;
 import com.training.license.sharing.entities.enums.Discipline;
 import com.training.license.sharing.entities.enums.Role;
-import com.training.license.sharing.services.CredentialsService;
 import com.training.license.sharing.services.UserService;
-import com.training.license.sharing.util.CredentialConverter;
 import com.training.license.sharing.util.UserConverters;
-import com.training.license.sharing.validator.UserValidation;
+import com.training.license.sharing.validator.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -30,22 +28,24 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.training.license.sharing.entities.enums.Role.valueOf;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static com.training.license.sharing.validator.ModelValidator.validateData;
+import static com.training.license.sharing.validator.ParameterValidator.isRoleValid;
+import static com.training.license.sharing.validator.ParameterValidator.isPageNumberValid;
+import static com.training.license.sharing.validator.ParameterValidator.isSizeValid;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
-    private final UserValidation userValidation;
+    private final UserValidator userValidator;
 
     private final UserConverters userConverters;
 
     @Autowired
-    public UserController(UserService userService, UserValidation userValidation, UserConverters userConverters, CredentialsService credentialsService, CredentialConverter credentialConverter) {
+    public UserController(UserService userService, UserValidator userValidator, UserConverters userConverters) {
         this.userService = userService;
-        this.userValidation = userValidation;
+        this.userValidator = userValidator;
         this.userConverters = userConverters;
     }
 
@@ -62,9 +62,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save-user")
     public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(BAD_REQUEST);
-        }
+        userValidator.isUserEmailUnique(userDTO.getCredential().getUsername(), bindingResult);
+        validateData(bindingResult);
         final User userFromDTO = userConverters.convertToUser(userDTO);
         final User savedUser = userService.saveUser(userFromDTO, true);
 
@@ -74,18 +73,15 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id) {
+        userValidator.areAllIdsExistingInDB(List.of(id));
         final Optional<User> userOptional = userService.getUserById(id);
-        return userOptional.map(user -> ResponseEntity.ok(userConverters.convertToUserDTO(user)))
-                .orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
+        return userOptional.map(user -> ResponseEntity.ok(userConverters.convertToUserDTO(user))).orElse(null);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/deactivate-user")
     public ResponseEntity<List<UserDTO>> deactivateUsers(@RequestBody List<Long> usersIds) {
-        if (!userValidation.areAllSelectedIdsExistingInDB(usersIds)) {
-            return ResponseEntity.status(BAD_REQUEST).build();
-        }
-
+        userValidator.areAllIdsExistingInDB(usersIds);
         final List<UserDTO> deactivatedUsers = userService.deactivateUsers(usersIds).stream()
                 .map(userConverters::convertToUserDTO)
                 .toList();
@@ -97,10 +93,8 @@ public class UserController {
     @PutMapping("/changing-role")
     public ResponseEntity<List<UserDTO>> changeRole(@RequestBody List<Long> usersIds,
                                                     @RequestParam("role") String stringRole) {
-        if (!userValidation.areAllSelectedIdsExistingInDB(usersIds)) {
-            return ResponseEntity.status(BAD_REQUEST).build();
-        }
-
+        userValidator.areAllIdsExistingInDB(usersIds);
+        isRoleValid(stringRole);
         final List<UserDTO> changedUsers = userService.changeRoleForUsers(usersIds, getRole(stringRole))
                 .stream()
                 .map(userConverters::convertToUserDTO)
@@ -130,6 +124,8 @@ public class UserController {
     public ResponseEntity<Map<Discipline, Long>> getTotalUsersPerDiscipline(
                                                             @RequestParam(name = "page", defaultValue = "0") int page,
                                                             @RequestParam(name = "size", defaultValue = "8") int size) {
+        isPageNumberValid(page);
+        isSizeValid(size);
         return ResponseEntity.ok(userService.getUsersPerDiscipline(page, size));
     }
     @PreAuthorize("hasRole('ADMIN')")

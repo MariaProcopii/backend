@@ -10,8 +10,8 @@ SELECT setval('license_id_seq', 1, false);
 SELECT setval('requests_id_seq', 1, false);
 SELECT setval('users_id_seq', 1, false);
 
-INSERT INTO Credentials(username, password) VALUES ('test.user1@gmail.com', 'test1');
-INSERT INTO Credentials(username, password) VALUES ('test.user2@gmail.com', 'test2');
+INSERT INTO Credentials(username, password) VALUES ('test.user1@endava.com', 'test1');
+INSERT INTO Credentials(username, password) VALUES ('test.user2@endava.com', 'test2');
 
 
 INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('USER_1', 'DEVELOPER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 0, 1);

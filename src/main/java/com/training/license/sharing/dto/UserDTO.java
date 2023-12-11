@@ -6,7 +6,9 @@ import com.training.license.sharing.entities.enums.Position;
 import com.training.license.sharing.entities.enums.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +21,18 @@ import lombok.Setter;
 public class UserDTO {
     private Long Id;
 
-    @NotBlank(message = "Name should not be blank")
+    @NotEmpty(message = "Name should not be empty")
     private String name;
 
+    @NotNull(message = "Position should not be null")
     @Enumerated(EnumType.STRING)
     private Position position;
 
+    @NotNull(message = "Discipline should not be null")
     @Enumerated(EnumType.STRING)
     private Discipline discipline;
 
+    @NotNull(message = "Delivery unit should not be null")
     @Enumerated(EnumType.STRING)
     private DeliveryUnit du;
 
@@ -36,5 +41,6 @@ public class UserDTO {
 
     private Integer lastActive;
 
+    @Valid
     CredentialDTO credential;
 }

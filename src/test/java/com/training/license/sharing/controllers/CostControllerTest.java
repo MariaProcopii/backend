@@ -14,8 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
-import java.util.Collections;
 
+import static com.training.license.sharing.util.CostTestData.EXCEPTION_MESSAGE;
+import static com.training.license.sharing.util.CostTestData.EXCEPTION_MESSAGE_JSON;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,7 +36,9 @@ class CostControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     @Test
@@ -54,12 +57,11 @@ class CostControllerTest {
 
     @Test
     void getCost_WhenServiceException_ShouldReturnInternalServerError() throws Exception {
-        final String exceptionMessage = "Service exception";
-        when(service.getCosts()).thenThrow(new RuntimeException(exceptionMessage));
+        when(service.getCosts()).thenThrow(new RuntimeException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/cost/get-cost")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string(exceptionMessage));
+                .andExpect(content().json(EXCEPTION_MESSAGE_JSON));
     }
 
     @Test

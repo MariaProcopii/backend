@@ -27,14 +27,17 @@ import java.util.List;
 public class NewLicenseDTO {
 
     @NotEmpty
-    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{3,30}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{3,30}",
+            message = "License name must be alphanumerical with special symbols and the size between 3 and 30 letters!")
     private String licenseName;
 
     @NotEmpty
-    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{5,30}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{5,30}",
+            message = "Website name must be alphanumerical with special symbols and the size between 5 and 30 letters!")
     private String website;
 
-    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{5,250}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=<>?]).{5,250}",
+            message = "Description must be alphanumerical with special symbols and the size between 5 and 250 letters!")
     private String description;
 
     @JsonProperty("licenseType")

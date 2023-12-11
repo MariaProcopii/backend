@@ -7,13 +7,18 @@ import com.training.license.sharing.entities.MonthlyCost;
 import com.training.license.sharing.repositories.CostViewRepository;
 import com.training.license.sharing.repositories.MonthlyCostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.training.license.sharing.util.InfoMessageUtil.GET_COSTS;
+import static com.training.license.sharing.validator.ErrorMessagesUtil.COST_NOT_AVAILABLE;
+
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class CostService {
 
     private final CostViewRepository costViewRepository;
@@ -21,9 +26,10 @@ public class CostService {
 
 
     public CostViewDTO getCosts() {
+        log.info(GET_COSTS);
         CostView costView = costViewRepository.findAll().stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No cost data available"));
+                .orElseThrow(() -> new RuntimeException(COST_NOT_AVAILABLE));
 
         List<MonthlyCost> monthlyCosts = monthlyCostRepository.findAll();
 
