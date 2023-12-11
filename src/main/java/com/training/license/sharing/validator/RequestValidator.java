@@ -69,7 +69,7 @@ public class RequestValidator implements Validator {
     }
 
     public void validateRequestAccessApproval(List<Long> ids, BindingResult errors) {
-        if (!requestService.isAllRequestIdsExistInDB(ids)){
+        if (!requestService.isAllRequestIdsExistInDB(ids)) {
             errors.addError(new FieldError("", ID_KEY, ID_NOT_EXIST_MESSAGE));
         }
 
@@ -85,7 +85,7 @@ public class RequestValidator implements Validator {
     }
 
     public void validateRequestAccessRejection(List<Long> ids, BindingResult errors) {
-        if (!requestService.isAllRequestIdsExistInDB(ids)){
+        if (!requestService.isAllRequestIdsExistInDB(ids)) {
             errors.addError(new FieldError("", ID_KEY, ID_NOT_EXIST_MESSAGE));
         }
     }
@@ -109,7 +109,7 @@ public class RequestValidator implements Validator {
                     validateLicenseIsExpiredForRequest(errors, license);
                     validateExceededNumberOfUsers(errors, license);
                 },
-                () -> errors.addError(new FieldError("", LICENSE_KEY, LICENSE_EXPIRATION_MESSAGE)));
+                () -> errors.addError(new FieldError("", LICENSE_KEY, LICENSE_NOT_EXIST_MESSAGE)));
     }
 
     private void validateExceededNumberOfUsers(BindingResult errors, License license) {

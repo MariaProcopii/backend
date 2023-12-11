@@ -55,7 +55,7 @@ public class NewLicenseTestData {
                 .activationDate(LocalDate.now())
                 .availability(20)
                 .cost(20.3)
-                .seats(20)
+                .seatsTotal(20)
                 .logo(logo)
                 .description("TEST DESCR")
                 .website("www.testwebsite.com")
@@ -102,7 +102,7 @@ public class NewLicenseTestData {
                 "    \"cost\": 22,\n" +
                 "    \"currency\": \"USD\",\n" +
                 "    \"availability\": 365,\n" +
-                "    \"seats\": 100,\n" +
+                "    \"seatsTotal\": 100,\n" +
                 "    \"isActive\": true,  \n" +
                 "    \"expiresOn\": \"12-May-2023\",\n" +
                 "    \"licenseType\": \"TRAINING\",\n" +

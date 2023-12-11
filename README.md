@@ -138,7 +138,7 @@ _Request body:_
   "cost": 6.0,
   "currency": "USD",
   "availability": 365,
-  "seats": 100,
+  "seatsTotal": 100,
   "isActive": true,
   "expiresOn": "12-May-2023",
   "licenseType": "TRAINING",

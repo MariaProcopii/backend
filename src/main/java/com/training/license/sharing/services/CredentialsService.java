@@ -32,7 +32,7 @@ public class CredentialsService {
     }
 
     public boolean existsByUsernameAndPassword(String username, String password) {
-        log.info(IF_CREDENTIAL_EXISTS, username, password);
+        log.info(IF_CREDENTIAL_EXISTS, username);
         return credentialRepository.existsByUsernameAndPassword(username, password);
     }
 
@@ -47,7 +47,7 @@ public class CredentialsService {
     }
 
     public Credential findByUsernameAndPassword(String username, String password) {
-        log.info(FIND_BY_USERNAME_AND_PASSWORD, username, password);
+        log.info(FIND_BY_USERNAME_AND_PASSWORD, username);
         return credentialRepository.findByUsernameAndPassword(username, password);
     }
 

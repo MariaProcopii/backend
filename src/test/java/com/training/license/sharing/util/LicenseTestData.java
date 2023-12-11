@@ -68,6 +68,11 @@ public class LicenseTestData {
             "    \"logo\": \"Image must have JPEG/JPG/PNG type\"\n" +
             "}";
 
+    public static final String INVALID_ENUM_JSON_MESSAGE = "{\n" +
+            "    \"invalid json\": \"Invalid value for enum: MDL\"\n" +
+            "}";
+
+    public static final String INVALID_ENUM_LICENSE_EDITING_JSON = "{\"currency\": \"MDL\"}";
     private static String generateIncorrectCredentialJson(CredentialDTO credentialDTO) {
         return "{\n" +
                 "    \"credentials\": \"User " + credentialDTO.getUsername() + " with this credentials does not exist\"\n" +
@@ -76,14 +81,19 @@ public class LicenseTestData {
 
     private static final String LICENSE_TESTAPP1_WEBSITE = "www.testapp1.com";
     public static final String CORRECT_JSON_TESTAPP1 = generateEditingJSON(1L, LICENSE_NAME_TESTAPP1, LICENSE_TESTAPP1_WEBSITE, null, TEST_CREDENTIALS_DTO_LIST);
-
     public static final String INCORRECT_ID_JSON_TESTAPP1 = generateEditingJSON(121L, LICENSE_NAME_TESTAPP1, LICENSE_TESTAPP1_WEBSITE, null, TEST_CREDENTIALS_DTO_LIST);
     public static final String INCORRECT_LOGO_SIZE_JSON_TESTAPP1 = generateEditingJSON(1L, LICENSE_NAME_TESTAPP1, LICENSE_TESTAPP1_WEBSITE, INCORRECT_SIZE_IMAGE_IN_BASE64_CODE, TEST_CREDENTIALS_DTO_LIST);
     public static final String INCORRECT_LOGO_TYPE_JSON_TESTAPP1 = generateEditingJSON(1L, LICENSE_NAME_TESTAPP1, LICENSE_TESTAPP1_WEBSITE, INCORRECT_TYPE_IMAGE_IN_BASE64_CODE, TEST_CREDENTIALS_DTO_LIST);
     public static final String ALREADY_EXISTENT_NAME_JSON_TESTAPP1 = generateEditingJSON(1L, LICENSE_NAME_TESTAPP3, LICENSE_TESTAPP1_WEBSITE, null, TEST_CREDENTIALS_DTO_LIST);
-    ;
+
     public static final String INCORRECT_CREDENTIALS_JSON_TESTAPP1 = generateEditingJSON(1L, LICENSE_NAME_TESTAPP1, LICENSE_TESTAPP1_WEBSITE, null, INCORRECT_CREDENTIALS_DTO_LIST);
-    ;
+    public static final String MISSING_FIELDS_JSON = "{\"licenseId\" : 1}";
+    public static final String INVALIT_TYPE_PARAM_JSON_MESSAGE = "{\n" +
+            "    \"argument type\": \"Argument type has invalid format\"\n" +
+            "}";
+    public static final String MISSING_PARAM_JSON_MESSAGE = "{\n" +
+            "    \"request parameter\": \"Required request parameter 'name' for method parameter type String is not present\"\n" +
+            "}";
 
     private static String generateEditingJSON(Long id, String name, String website, String logo, List<CredentialDTO> credentialDTOS) {
         List<String> credentialDTOJsons = toJsonList(credentialDTOS);

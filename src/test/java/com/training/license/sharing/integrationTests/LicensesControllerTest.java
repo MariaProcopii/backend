@@ -25,6 +25,8 @@ import static com.training.license.sharing.util.LicenseTestData.INCORRECT_TYPE_T
 import static com.training.license.sharing.util.LicenseTestData.INCORRECT_LOGO_SIZE_RETURNED_JSON;
 import static com.training.license.sharing.util.LicenseTestData.INCORRECT_LOGO_SIZE_JSON_TESTAPP1;
 import static com.training.license.sharing.util.LicenseTestData.INCORRECT_LOGO_TYPE_JSON_TESTAPP1;
+import static com.training.license.sharing.util.LicenseTestData.INVALID_ENUM_JSON_MESSAGE;
+import static com.training.license.sharing.util.LicenseTestData.INVALID_ENUM_LICENSE_EDITING_JSON;
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_NAME;
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_NAME_TESTAPP1;
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_NAME_TESTAPP2;
@@ -32,6 +34,8 @@ import static com.training.license.sharing.util.LicenseTestData.LICENSE_NAME_TES
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_NOT_EXISTENT_RETURNED_JSON;
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_WITH_ID_NOT_EXISTENT_RETURNED_JSON;
 import static com.training.license.sharing.util.LicenseTestData.LICENSE_WITH_NAME_ALREADY_EXISTENT_RETURNED_JSON;
+import static com.training.license.sharing.util.LicenseTestData.MISSING_FIELDS_JSON;
+import static com.training.license.sharing.util.LicenseTestData.MISSING_PARAM_JSON_MESSAGE;
 import static com.training.license.sharing.util.LicenseTestData.NAME_PARAM;
 import static com.training.license.sharing.util.LicenseTestData.VALUE_FOR_NAME_PARAM;
 import static com.training.license.sharing.util.LicenseTestData.getActiveLicensesJson;
@@ -55,6 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/sqlMockData/create-mock-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sqlMockData/delete-mock-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class LicensesControllerTest {
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -208,4 +213,28 @@ class LicensesControllerTest {
                         .content(CORRECT_JSON_TESTAPP1))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void editLicenseShouldReturnBadRequestWithMissingFieldsJson() throws Exception {
+        mockMvc.perform(put("/license/edit-license")
+                        .contentType(APPLICATION_JSON)
+                        .content(MISSING_FIELDS_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void editLicenseShouldReturnBadRequestWithInvalidEnumJson() throws Exception {
+        mockMvc.perform(put("/license/edit-license")
+                        .contentType(APPLICATION_JSON)
+                        .content(INVALID_ENUM_LICENSE_EDITING_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(INVALID_ENUM_JSON_MESSAGE));
+    }
+    @Test
+    void getLicenseShouldReturnBadRequestWithMissingParam() throws Exception {
+        mockMvc.perform(get("/license/get-license"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(MISSING_PARAM_JSON_MESSAGE));
+    }
+
 }
