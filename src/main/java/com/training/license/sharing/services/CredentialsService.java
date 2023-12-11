@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.training.license.sharing.util.InfoMessageUtil.FIND_BY_USERNAME;
-import static com.training.license.sharing.util.InfoMessageUtil.FIND_BY_USERNAME_AND_PASSWORD;
+import static com.training.license.sharing.util.InfoMessageUtil.FIND_CREDENTIAL_BY_USERNAME;
 import static com.training.license.sharing.util.InfoMessageUtil.IF_CREDENTIAL_EXISTS;
 import static com.training.license.sharing.util.InfoMessageUtil.SAVE_CREDENTIAL;
 
@@ -47,7 +47,7 @@ public class CredentialsService {
     }
 
     public Credential findByUsernameAndPassword(String username, String password) {
-        log.info(FIND_BY_USERNAME_AND_PASSWORD, username);
+        log.info(FIND_CREDENTIAL_BY_USERNAME, username);
         return credentialRepository.findByUsernameAndPassword(username, password);
     }
 
