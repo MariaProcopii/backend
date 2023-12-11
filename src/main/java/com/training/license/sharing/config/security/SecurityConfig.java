@@ -24,12 +24,17 @@ import static java.util.Arrays.asList;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final CredentialsService credentialsService;
+
     @Value("${security.endpoints.admin}")
     private String adminEndpoints;
 
     @Value("${security.endpoints.admin_reviewer}")
     private String adminReviewerEndpoints;
+
+    @Value("${security.endpoint.allowed-methods}")
+    private String allowedMethods;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,6 +58,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         List<String> adminPaths = asList(adminEndpoints.split(","));
         List<String> adminReviewerPaths = asList(adminReviewerEndpoints.split(","));
+        List<String> allowedMethodsList = asList(allowedMethods.split(","));
 
         http
                 .cors()
@@ -60,6 +66,7 @@ public class SecurityConfig {
                     CorsConfiguration cors = new CorsConfiguration();
                     cors.applyPermitDefaultValues();
                     cors.addAllowedOrigin("*");
+                    cors.setAllowedMethods(allowedMethodsList);
                     return cors;
                 })
                 .and()
