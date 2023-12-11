@@ -1,9 +1,8 @@
 package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
-import com.training.license.sharing.dto.LicenseEditingDTO;
-import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.NewLicenseDTO;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.services.LicenseService;
 import com.training.license.sharing.validator.LicenseValidator;
@@ -48,12 +47,12 @@ public class LicenseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-new-license")
-    public ResponseEntity<HttpStatus> addNewLicense(@RequestBody @Valid NewLicenseDTO licenseDTO,
+    public ResponseEntity<Long> addNewLicense(@RequestBody @Valid NewLicenseDTO licenseDTO,
                                                     BindingResult bindingResult) {
         validateData(bindingResult);
         licenseValidator.validateNewLicense(licenseDTO);
-        licenseService.saveNewLicense(licenseDTO);
-        return ResponseEntity.ok(HttpStatus.OK);
+        Long savedLicenseId = licenseService.saveNewLicense(licenseDTO);
+        return new ResponseEntity<>(savedLicenseId, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('Admin')")
@@ -68,16 +67,16 @@ public class LicenseController {
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping("/get-license")
-    public ResponseEntity<LicenseEditingDTO> getLicense(@RequestParam() String name){
-        LicenseEditingDTO licenseEditingDTO = licenseValidator.getValidatedLicenseEditingDTOByName(name);
-        return ResponseEntity.ok().body(licenseEditingDTO);
+    public ResponseEntity<NewLicenseDTO> getLicense(@RequestParam() String name){
+        NewLicenseDTO newLicenseDTO = licenseValidator.getValidatedLicenseEditingDTOByName(name);
+        return ResponseEntity.ok().body(newLicenseDTO);
     }
 
     @PreAuthorize("hasRole('Admin')")
     @PutMapping("/edit-license")
-    public ResponseEntity<HttpStatus> editLicense(@RequestBody @Valid LicenseEditingDTO licenseEditingDTO){
-        licenseValidator.validateEditingLicense(licenseEditingDTO);
-        licenseService.editLicense(licenseEditingDTO);
+    public ResponseEntity<HttpStatus> editLicense(@RequestBody @Valid NewLicenseDTO newLicenseDTO){
+        licenseValidator.validateEditingLicense(newLicenseDTO);
+        licenseService.editLicense(newLicenseDTO);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

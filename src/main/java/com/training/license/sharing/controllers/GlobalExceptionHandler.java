@@ -1,6 +1,7 @@
 package com.training.license.sharing.controllers;
 
 import com.training.license.sharing.util.CustomExceptions.CredentialsNonExistentException;
+import com.training.license.sharing.util.CustomExceptions.FieldNullPointerException;
 import com.training.license.sharing.util.CustomExceptions.IdNotValidException;
 import com.training.license.sharing.util.CustomExceptions.ImageHasIllegalTypeException;
 import com.training.license.sharing.util.CustomExceptions.ImageSizeOutOfBoundsException;
@@ -151,5 +152,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex){
         log.error(ex.getMessage());
         return ResponseEntity.status(BAD_REQUEST).body(Map.of(PARAMETER_KEY, ex.getMessage()));
+    }
+
+    @ExceptionHandler(FieldNullPointerException.class)
+    public ResponseEntity<Map<String, String>> fieldNonExistentException(FieldNullPointerException ex){
+        log.error(ex.getMessage());
+        return ResponseEntity.status(BAD_REQUEST).body(Map.of(ex.getFieldName(), ex.getMessage()));
     }
 }

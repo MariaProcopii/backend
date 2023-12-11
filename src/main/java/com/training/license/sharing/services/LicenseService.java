@@ -2,17 +2,14 @@ package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.CredentialDTO;
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
-import com.training.license.sharing.dto.LicenseDTO;
-import com.training.license.sharing.dto.LicenseEditingDTO;
-import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.NewLicenseDTO;
+import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.Credential;
 import com.training.license.sharing.entities.License;
 import com.training.license.sharing.entities.enums.DurationUnit;
 import com.training.license.sharing.entities.LicenseCredential;
 import com.training.license.sharing.entities.LicenseCredentialKey;
-import com.training.license.sharing.entities.enums.DurationUnit;
 import com.training.license.sharing.repositories.LicenseCredentialRepository;
 import com.training.license.sharing.repositories.LicenseRepository;
 import com.training.license.sharing.util.CredentialConverter;
@@ -29,8 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,14 +90,15 @@ public class LicenseService {
     }
 
     @Transactional
-    public void saveNewLicense(NewLicenseDTO newLicense) {
+    public Long saveNewLicense(NewLicenseDTO newLicense) {
         List<Credential> credentials = credentialsService.findByDTOs(newLicense.getCredentials());
         License savedLicense = licenseRepository.save(convertToLicense(newLicense));
         log.info(SAVE_NEW_LICENSE, newLicense.getLicenseName());
         relateLicenseWithCredentials(savedLicense, credentials);
+        return savedLicense.getId();
     }
 
-    public Optional<LicenseEditingDTO> getLicenseEditingDTOByName(String name) {
+    public Optional<NewLicenseDTO> getLicenseEditingDTOByName(String name) {
         return getLicenseByLicenseName(name)
                 .map(this::getLicenseEditingDTO);
     }
@@ -121,16 +117,16 @@ public class LicenseService {
     }
 
     public boolean doesLicenseExistById(Long id){
-        return licenseRepository.existsById(id);
+        return id != null && licenseRepository.existsById(id);
     }
 
     @Transactional
-    public void editLicense(LicenseEditingDTO licenseEditingDTO){
-        log.info(EDIT_LICENSE, licenseEditingDTO.getLicenseId());
-        License unupdatedLicense = licenseRepository.findById(licenseEditingDTO.getLicenseId()).get();
-        License license = convertToLicense(licenseEditingDTO, unupdatedLicense);
+    public void editLicense(NewLicenseDTO newLicenseDTO){
+        log.info(EDIT_LICENSE, newLicenseDTO.getLicenseId());
+        License unupdatedLicense = licenseRepository.findById(newLicenseDTO.getLicenseId()).get();
+        License license = convertToLicense(newLicenseDTO, unupdatedLicense);
         licenseRepository.save(license);
-        updateLicenseCredentialRelations(license, licenseEditingDTO.getCredentials());
+        updateLicenseCredentialRelations(license, newLicenseDTO.getCredentials());
     }
 
     private void updateLicenseCredentialRelations(License license, List<CredentialDTO> credentialDTOList) {
@@ -145,7 +141,7 @@ public class LicenseService {
                 .collect(Collectors.toList());
     }
 
-    private LicenseEditingDTO getLicenseEditingDTO(License license) {
+    private NewLicenseDTO getLicenseEditingDTO(License license) {
         return convertToLicenseEditingDTO(license, getCredentialDTOListByLicense(license));
     }
 
@@ -189,33 +185,34 @@ public class LicenseService {
                 .build();
     }
 
-    private LicenseEditingDTO convertToLicenseEditingDTO(License license, List<CredentialDTO> credentialDTOList) {
-        return modelMapper.map(license, LicenseEditingDTO.class).toBuilder()
+    private NewLicenseDTO convertToLicenseEditingDTO(License license, List<CredentialDTO> credentialDTOList) {
+        return modelMapper.map(license, NewLicenseDTO.class).toBuilder()
                 .typeOfLicense(license.getLicenseType())
                 .credentials(credentialDTOList)
                 .build();
     }
 
-    private License convertToLicense (LicenseEditingDTO licenseEditingDTO, License oldLicense){
-        return modelMapper.map(licenseEditingDTO, License.class).toBuilder()
+    private License convertToLicense (NewLicenseDTO newLicenseDTO, License oldLicense){
+        return modelMapper.map(newLicenseDTO, License.class).toBuilder()
                 .unusedPeriod(oldLicense.getUnusedPeriod())
                 .creatingDate(oldLicense.getCreatingDate())
-                .logo(convertLogoToBytes(licenseEditingDTO.getLogo()))
+                .logo(convertLogoToBytes(newLicenseDTO.getLogo()))
                 .build();
     }
 
     private License convertToLicense(NewLicenseDTO licenseDTO) {
         return modelMapper.map(licenseDTO, License.class).toBuilder()
+                .id(null)
                 .seatsAvailable(evaluateAvailableSeats(licenseDTO))
                 .logo(convertLogoToBytes(licenseDTO.getLogo()))
-                .seatsTotal(licenseDTO.getSeats())
+                .seatsTotal(licenseDTO.getSeatsTotal())
                 .creatingDate(LocalDate.now())
                 .unusedPeriod(0)
                 .build();
     }
 
     private int evaluateAvailableSeats(NewLicenseDTO licenseDTO) {
-        return licenseDTO.getSeats() - licenseDTO.getCredentials().size();
+        return licenseDTO.getSeatsTotal() - licenseDTO.getCredentials().size();
     }
 
     private byte[] convertLogoToBytes(String logo) {

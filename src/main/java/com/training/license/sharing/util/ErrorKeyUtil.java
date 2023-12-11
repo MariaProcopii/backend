@@ -16,6 +16,8 @@ public class ErrorKeyUtil {
     public static final String LICENSE_KEY = "license";
     public static final String REQUEST_KEY = "request";
     public static final String INVALID_DATA = "invalid data";
+    public static final String SEATS_TOTAL_KEY = "seatsTotal";
+    public static final String SEATS_AVAILABLE_KEY = "seatsAvailable";
 
 
 }

@@ -2,7 +2,19 @@ package com.training.license.sharing.integrationTests;
 
 import com.training.license.sharing.controllers.GlobalExceptionHandler;
 import com.training.license.sharing.controllers.UserController;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.training.license.sharing.util.LicenseTestData.INVALIT_TYPE_PARAM_JSON_MESSAGE;
 import static com.training.license.sharing.util.UserTestData.AMOUNT_OF_DISCIPLINES;
 import static com.training.license.sharing.util.UserTestData.AMOUNT_OF_NEW_USERS;
 import static com.training.license.sharing.util.UserTestData.AMOUNT_OF_USERS;
@@ -14,20 +26,6 @@ import static com.training.license.sharing.util.UserTestData.getInvalidUser1Json
 import static com.training.license.sharing.util.UserTestData.getListInvalidUserIdJson;
 import static com.training.license.sharing.util.UserTestData.getListUserIdsJson;
 import static com.training.license.sharing.util.UserTestData.getUser1Json;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static com.training.license.sharing.util.UserTestData.newUserToSaveJson;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/sqlMockData/create-mock-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sqlMockData/delete-mock-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class UserControllerTest {
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -176,4 +175,45 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(content().json(getDisciplinesWithUsersJson()));
     }
+
+    @Test
+    void getDisciplinesShouldReturnBadRequestWithInvalidPageParam() throws Exception {
+        String invalidParam = "-21";
+        mockMvc.perform((MockMvcRequestBuilders.get("/users/get-disciplines-with-users")
+                        .param("page", invalidParam)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getDisciplinesShouldReturnBadRequestWithInvalidSizeParam() throws Exception {
+        String invalidParam = "-2";
+        mockMvc.perform((MockMvcRequestBuilders.get("/users/get-disciplines-with-users")
+                        .param("size", invalidParam)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getDisciplinesShouldReturnBadRequestWithInvalidTypeParam() throws Exception {
+        String invalidType = "INVALID_TYPE";
+        mockMvc.perform((MockMvcRequestBuilders.get("/users/get-disciplines-with-users")
+                        .param("size", invalidType)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(INVALIT_TYPE_PARAM_JSON_MESSAGE));
+    }
+
+    @Test
+    void getDisciplinesShouldReturnBadRequestWithInvaidTypeParam() throws Exception {
+        String invalidType = "INVALID_TYPE";
+        mockMvc.perform((MockMvcRequestBuilders.get("/users/get-disciplines-with-users")
+                        .param("size", invalidType)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(INVALIT_TYPE_PARAM_JSON_MESSAGE));
+    }
+
+    @Test
+    void getUsersOverviewShouldReturnOk() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/get-users-overview"))
+                .andExpect(status().isOk());
+    }
+
 }

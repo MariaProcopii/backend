@@ -1,7 +1,7 @@
 package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
-import com.training.license.sharing.dto.LicenseEditingDTO;
+import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.dto.LicenseSummaryDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.License;
@@ -63,13 +63,13 @@ class LicenseServiceTest {
 
     private License activeLicense;
     private License expiredLicense;
-    private LicenseEditingDTO licenseEditingDTOTest;
+    private NewLicenseDTO newLicenseDTOTest;
 
     @BeforeEach
     void setUp() {
         activeLicense = createActiveLicense();
         expiredLicense = createExpiredLicense();
-        licenseEditingDTOTest = new LicenseEditingDTO().toBuilder()
+        newLicenseDTOTest = new NewLicenseDTO().toBuilder()
                 .licenseId(1L)
                 .build();
     }
@@ -213,7 +213,7 @@ class LicenseServiceTest {
         when(licenseRepository.findById(any())).thenReturn(Optional.of(new License()));
         when(modelMapper.map(any(),any())).thenReturn(new License());
 
-        licenseService.editLicense(licenseEditingDTOTest);
+        licenseService.editLicense(newLicenseDTOTest);
 
         verify(licenseRepository).save(any());
         verify(modelMapper).map(any(),any());

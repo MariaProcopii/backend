@@ -46,9 +46,8 @@ public class InfoMessageUtil {
 
     public static final String SAVE_CREDENTIAL = "Saving credential with id= {}";
     public static final String FIND_BY_USERNAME = "Finding credential by username= {}";
-    public static final String IF_CREDENTIAL_EXISTS = "Checking if credential exists with username= {} and password= {}";
-    public static final String FIND_BY_USERNAME_AND_PASSWORD = "Finding credential by username= {} and password= {}";
-
+    public static final String IF_CREDENTIAL_EXISTS = "Checking if credential exists with username= {}";
+    public static final String FIND_BY_USERNAME_AND_PASSWORD = "Finding credential by username= {}";
     public static final String GET_COSTS = "Getting costs";
     public static final String GET_AVERAGE_COSTS = "Getting average user costs";
 }

@@ -1,6 +1,6 @@
 package com.training.license.sharing.validator;
 
-import com.training.license.sharing.dto.LicenseEditingDTO;
+import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.services.CredentialsService;
 import com.training.license.sharing.services.LicenseService;
 import com.training.license.sharing.util.CustomExceptions.ImageHasIllegalTypeException;
@@ -37,11 +37,11 @@ class LicenseValidatorTest {
     @InjectMocks
     private LicenseValidator licenseValidator;
 
-    private LicenseEditingDTO licenseEditingDTOTest;
+    private NewLicenseDTO newLicenseDTOTest;
 
     @BeforeEach
     void setUp() {
-        licenseEditingDTOTest = new LicenseEditingDTO().toBuilder()
+        newLicenseDTOTest = new NewLicenseDTO().toBuilder()
                 .licenseId(1L)
                 .build();
     }
@@ -66,7 +66,7 @@ class LicenseValidatorTest {
 
     @Test
     void validateEditingLicenseShouldThrowExceptionWithIncorrectId(){
-        assertThatThrownBy(()->licenseValidator.validateEditingLicense(licenseEditingDTOTest))
+        assertThatThrownBy(()->licenseValidator.validateEditingLicense(newLicenseDTOTest))
                 .isInstanceOf(LicenseExistentByIdException.class);
     }
 
@@ -75,7 +75,7 @@ class LicenseValidatorTest {
         when(licenseService.doesLicenseExistById(any())).thenReturn(true);
         when(licenseService.doesLicenseExistByNameExceptId(any(),any())).thenReturn(true);
 
-        assertThatThrownBy(()->licenseValidator.validateEditingLicense(licenseEditingDTOTest))
+        assertThatThrownBy(()->licenseValidator.validateEditingLicense(newLicenseDTOTest))
                 .isInstanceOf(LicenseExistentByNameException.class);
     }
 
