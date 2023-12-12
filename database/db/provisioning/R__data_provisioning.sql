@@ -4,21 +4,62 @@ ALTER SEQUENCE license_id_seq RESTART WITH 1;
 ALTER SEQUENCE requests_id_seq RESTART WITH 1;
 
 DELETE FROM UserLicenses;
-DELETE FROM Users;
+DELETE FROM Users WHERE name <> 'Admin User';
+DELETE FROM LicenseCredentials;
 DELETE FROM Licenses;
 DELETE FROM Requests;
-DELETE FROM Credentials;
-DELETE FROM LicenseCredentials;
+DELETE FROM Credentials WHERE username <> 'admin@example.com';
+
+UPDATE Users
+SET
+    position = 'MANAGER',
+    discipline ='SUPPORT',
+    du = 'MDD',
+    status = 'ACTIVE',
+    last_active = '100'
+WHERE name = 'Admin User';
 
 INSERT INTO Credentials(username, password) VALUES ('john.doe@endava.com', 'johndoe');
 INSERT INTO Credentials(username, password) VALUES ('jane.smith@endava.com', 'JaneSmith');
 INSERT INTO Credentials(username, password) VALUES ('steve.brown@endava.com', 'SteveBrown');
 INSERT INTO Credentials(username, password) VALUES ('emma.jones@endava.com', 'EmmaJones');
+INSERT INTO Credentials(username, password) VALUES ('sarah.williams@endava.com', 'SarahWilliams');
+INSERT INTO Credentials(username, password) VALUES ('michael.clark@endava.com', 'MichaelClark');
+INSERT INTO Credentials(username, password) VALUES ('olivia.garcia@endava.com', 'OliviaGarcia');
+INSERT INTO Credentials(username, password) VALUES ('daniel.miller@endava.com', 'DanielMiller');
+INSERT INTO Credentials(username, password) VALUES ('sophia.wilson@endava.com', 'SophiaWilson');
+INSERT INTO Credentials(username, password) VALUES ('william.martinez@endava.com', 'WilliamMartinez');
+INSERT INTO Credentials(username, password) VALUES ('ethan.anderson@endava.com', 'EthanAnderson');
+INSERT INTO Credentials(username, password) VALUES ('ava.taylor@endava.com', 'AvaTaylor');
+INSERT INTO Credentials(username, password) VALUES ('mia.hernandez@endava.com', 'MiaHernandez');
+INSERT INTO Credentials(username, password) VALUES ('liam.gonzalez@endava.com', 'LiamGonzalez');
+INSERT INTO Credentials(username, password) VALUES ('harper.lee@endava.com', 'HarperLee');
+INSERT INTO Credentials(username, password) VALUES ('noah.moore@endava.com', 'NoahMoore');
+INSERT INTO Credentials(username, password) VALUES ('lily.walker@endava.com', 'LilyWalker');
+INSERT INTO Credentials(username, password) VALUES ('james.reed@endava.com', 'JamesReed');
+INSERT INTO Credentials(username, password) VALUES ('grace.hill@endava.com', 'GraceHill');
+INSERT INTO Credentials(username, password) VALUES ('logan.hall@endava.com', 'LoganHall');
 
 INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('John Doe', 'DEVELOPER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 100, 1);
-INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Jane Smith', 'MANAGER', 'CREATIVE_SERVICES', 'MDD', 'ACTIVE', 376, 2);
-INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Steve Brown', 'MANAGER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 200, 3);
-INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Emma Jones', 'SENIOR_TESTER', 'TESTING', 'MDD', 'ACTIVE', 400, 4);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Jane Smith', 'SENIOR_DEVELOPER', 'DEVELOPMENT', 'MDD', 'ACTIVE', 376, 2);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Steve Brown', 'CREATIVE_LEAD', 'CREATIVE_SERVICES', 'MDD', 'ACTIVE', 200, 3);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Emma Jones', 'DISCIPLINE_LEAD', 'CREATIVE_SERVICES', 'MDD', 'ACTIVE', 400, 4);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Sarah Williams', 'TESTER', 'TESTING', 'MDD', 'ACTIVE', 150, 5);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Michael Clark', 'SENIOR_TESTER', 'TESTING', 'MDD', 'ACTIVE', 300, 6);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Olivia Garcia', 'ANALYST', 'ANALYSIS', 'MDD', 'ACTIVE', 280, 7);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Daniel Miller', 'SENIOR_ANALYST', 'ANALYSIS', 'MDD', 'ACTIVE', 420, 8);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Sophia Wilson', 'SALES_REPRESENTATIVE', 'SALES', 'MDD', 'ACTIVE', 190, 9);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('William Martinez', 'SALES_REPRESENTATIVE', 'SALES', 'MDD', 'ACTIVE', 320, 10);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Ethan Anderson', 'MARKETING_SPECIALIST', 'MARKETING', 'MDD', 'ACTIVE', 250, 11);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Ava Taylor', 'MARKETING_SPECIALIST', 'MARKETING', 'MDD', 'ACTIVE', 370, 12);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Mia Hernandez', 'MANAGER', 'SUPPORT', 'MDD', 'ACTIVE', 280, 13);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Liam Gonzalez', 'MANAGER', 'SUPPORT', 'MDD', 'ACTIVE', 330, 14);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Harper Lee', 'UX_DESIGNER', 'UI', 'MDD', 'ACTIVE', 260, 15);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Noah Moore', 'SENIOR_VISUAL_DESIGNER', 'UI', 'MDD', 'ACTIVE', 290, 16);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Lily Walker', 'FINANCE_SPECIALIST', 'FINANCE', 'MDD', 'ACTIVE', 380, 17);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('James Reed', 'FINANCE_SPECIALIST', 'FINANCE', 'MDD', 'ACTIVE', 210, 18);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Grace Hill', 'PEOPLE_SPECIALIST', 'HR', 'MDD', 'ACTIVE', 260, 19);
+INSERT INTO Users (name, position, discipline, du, status, last_active, credentialId) VALUES ('Logan Hall', 'PEOPLE_SPECIALIST', 'HR', 'MDD', 'ACTIVE', 310, 20);
 
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('Postman', 666, 365, 13, 'SOFTWARE', '2023-10-31', '2024-10-31', 'Postman API', 10, 250, false, '2023-10-31');
 INSERT INTO Licenses (license_name, cost, availability, unused_period, license_type, activation_date, expiration_date, description, seats_available, seats_total, is_recurring, creating_date) VALUES ('Adobe Suite', 1313, 730, 30, 'SOFTWARE', '2023-11-01', '2024-11-01', 'Adobe Studio API',  10, 250, false, '2023-11-01');
