@@ -21,4 +21,6 @@ public class ErrorMessagesUtil {
     public static final String LICENSE_WITH_ID_NON_EXISTENT_MESSAGE = "License with this id does not exist";
     public static final String COST_NOT_AVAILABLE = "No cost data available";
     public static final String MUST_NOT_BE_NULL = "must not be null";
+    public static final String LICENSE_INACTIVE_MESSAGE = "License exists but is not active for the requested date";
+
 }

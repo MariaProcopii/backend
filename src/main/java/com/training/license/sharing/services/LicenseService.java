@@ -81,8 +81,10 @@ public class LicenseService {
         log.info(FIND_BY_NAME_AND_START_DATE, licenseName, startOfUse);
         return licenseRepository.findByLicenseName(licenseName, startOfUse)
                 .stream()
+                .sorted(Comparator.comparing(License::getActivationDate).reversed())
                 .findFirst();
     }
+
 
     public long findNumberOfUsersByLicense(License license) {
         log.info(FIND_NUMBER_OF_USERS_BY_LICENSE, license.getLicenseName());
