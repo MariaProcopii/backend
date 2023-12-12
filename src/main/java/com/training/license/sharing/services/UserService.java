@@ -88,6 +88,11 @@ public class UserService {
         return userRepository.findAll(sort);
     }
 
+    public List<User> getAllUsersByUsername(Sort sort, String username) {
+        log.info(FETCHING_ALL_USERS);
+        return userRepository.findAllByName(username, sort);
+    }
+
     public Optional<User> getUserById(Long userId) {
         log.info(FETCHING_USER_BY_ID, userId);
         return userRepository.findById(userId);

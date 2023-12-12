@@ -25,12 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.training.license.sharing.entities.enums.Role.valueOf;
 import static com.training.license.sharing.validator.ModelValidator.validateData;
-import static com.training.license.sharing.validator.ParameterValidator.isRoleValid;
 import static com.training.license.sharing.validator.ParameterValidator.isPageNumberValid;
+import static com.training.license.sharing.validator.ParameterValidator.isRoleValid;
 import static com.training.license.sharing.validator.ParameterValidator.isSizeValid;
 
 @RestController
@@ -51,12 +52,19 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-all-users")
-    public ResponseEntity<List<UserDTO>> findAll(@RequestParam(required = false, defaultValue = "asc") String sort) {
-        final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "credential.role");
-        final List<UserDTO> users = userService.getAllUsers(sorting).stream()
+    public ResponseEntity<List<UserDTO>> findAll(@RequestParam(required = false, defaultValue = "asc") String sort,
+                                                 @RequestParam(required = false) String username) {
+        final Sort sorting = Sort.by(sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC :
+                             Sort.Direction.DESC, "credential.role");
+        final List<UserDTO> users = fetchUsersDataFromDb(sorting, username).stream()
                 .map(userConverters::convertToUserDTO)
                 .toList();
         return ResponseEntity.ok(users);
+    }
+
+    private List<User> fetchUsersDataFromDb(Sort sorting, String username) {
+        return Objects.isNull(username) ? userService.getAllUsers(sorting) :
+                userService.getAllUsersByUsername(sorting, username);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -102,6 +110,7 @@ public class UserController {
 
         return ResponseEntity.ok(changedUsers);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-total-users")
     public ResponseEntity<Integer> getTotalUsers() {
@@ -119,15 +128,17 @@ public class UserController {
     public ResponseEntity<Integer> getTotalDisciplines() {
         return ResponseEntity.ok(userService.getTotalDisciplines());
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-disciplines-with-users")
     public ResponseEntity<Map<Discipline, Long>> getTotalUsersPerDiscipline(
-                                                            @RequestParam(name = "page", defaultValue = "0") int page,
-                                                            @RequestParam(name = "size", defaultValue = "8") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size) {
         isPageNumberValid(page);
         isSizeValid(size);
         return ResponseEntity.ok(userService.getUsersPerDiscipline(page, size));
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-users-overview")
     public ResponseEntity<UsersOverviewDTO> getUsersOverview() {

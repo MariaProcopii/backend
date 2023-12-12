@@ -40,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
 
+    public static final String PARAM_USERNAME = "username";
+    public static final String PARAM_VALUE_USERNAME = "USER";
     @Autowired
     private MockMvc mockMvc;
 
@@ -58,6 +60,15 @@ class UserControllerTest {
     @Test
     void shouldReturnAllUsers() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/get-all-users"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(AMOUNT_OF_USERS))
+                .andExpect(content().json(getAllUsersJson()));
+    }
+
+    @Test
+    void shouldReturnAllUsersByName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/get-all-users").param(PARAM_USERNAME, PARAM_VALUE_USERNAME))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(AMOUNT_OF_USERS))
