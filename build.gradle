@@ -15,8 +15,7 @@ plugins {
     id 'jacoco'
 }
 
-group = 'com.training.license.sharing'
-version = '1.0-SNAPSHOT'
+apply from: 'project-version.gradle'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
