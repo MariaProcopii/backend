@@ -62,6 +62,7 @@ public class RequestValidator implements Validator {
 
     public void validateRequestAccess(Object target, BindingResult errors) {
         final RequestDTO requestDTO = (RequestDTO) target;
+        validateStartOfUseDate(errors, requestDTO.getStartOfUse());
         if (userService.findByNameAndDiscipline(requestDTO.getUsername(), requestDTO.getDiscipline()).isEmpty()) {
             errors.addError(new FieldError("", INVALID_DATA, USER_NOT_EXIST_MESSAGE));
         }
@@ -133,14 +134,23 @@ public class RequestValidator implements Validator {
 
 
     private void validateRequestedLicense(BindingResult errors, String app, LocalDate startOfUse) {
-        final Optional<License> requestedLicenses = licenseService.findByNameAndStartDate(app, startOfUse);
-        requestedLicenses.ifPresentOrElse(license -> {
-                    validateLicenseIsExpiredForRequest(errors, license);
-                    validateExceededNumberOfUsers(errors, license);
-                },
-                () -> {
-                    errors.addError(new FieldError("", LICENSE_KEY, LICENSE_NOT_EXIST_MESSAGE));
-                    log.error(LICENSE_NOT_EXIST_MESSAGE);
-                });
+        final Optional<License> licenseOptional = licenseService.getLicenseByLicenseName(app);
+        if (licenseOptional.isPresent()) {
+            License license = licenseOptional.get();
+            if (!license.isActiveOnDate(startOfUse)) {
+                errors.addError(new FieldError("", LICENSE_KEY, "License exists but is not active for the requested date"));
+            } else {
+                validateLicenseIsExpiredForRequest(errors, license);
+                validateExceededNumberOfUsers(errors, license);
+            }
+        } else {
+            errors.addError(new FieldError("", LICENSE_KEY, LICENSE_NOT_EXIST_MESSAGE));
+        }
     }
+    private void validateStartOfUseDate(BindingResult errors, LocalDate startOfUse) {
+        if (startOfUse.isBefore(LocalDate.now())) {
+            errors.addError(new FieldError("startOfUse", "startOfUse", "The start of use date cannot be in the past"));
+        }
+    }
+
 }

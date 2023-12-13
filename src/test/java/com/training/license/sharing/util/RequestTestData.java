@@ -51,17 +51,25 @@ public class RequestTestData {
     }
 
     public static String getValidRequestDTOJson() throws JsonProcessingException {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
         final RequestDTO requestDTO = new RequestDTO(
                 USER_REQUEST_1.getUsername(),
                 USER_REQUEST_1.getDiscipline(),
-                USER_REQUEST_1.getStartOfUse(),
+                futureDate,
                 USER_REQUEST_1.getApp()
         );
         return objectMapper.writeValueAsString(requestDTO);
     }
 
     public static String getInValidRequestDTOJson() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(new RequestDTO());
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        final RequestDTO invalidRequestDTO = new RequestDTO(
+                "Invalid User",
+                USER_REQUEST_1.getDiscipline(),
+                pastDate,
+                "Invalid App"
+        );
+        return objectMapper.writeValueAsString(invalidRequestDTO);
     }
 
     public static String getListValidIdsRequestJson() throws JsonProcessingException {

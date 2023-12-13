@@ -95,4 +95,8 @@ public class License {
     @Column(name = "creating_date")
     private LocalDate creatingDate;
 
+    public boolean isActiveOnDate(LocalDate date) {
+        return date.isAfter(this.activationDate) && date.isBefore(this.expirationDate);
+    }
+
 }

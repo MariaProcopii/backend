@@ -16,7 +16,8 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
     @Query("SELECT l " +
             "FROM License l " +
             "WHERE l.licenseName = :name " +
-            "AND l.activationDate = :startOfUse")
+            "AND l.activationDate <= :startOfUse " +
+            "AND l.expirationDate > :startOfUse")
     List<License> findByLicenseName(@Param("name") String name, @Param("startOfUse") LocalDate startOfUse);
 
     @Query("SELECT COUNT(*) " +

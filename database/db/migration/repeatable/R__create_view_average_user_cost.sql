@@ -24,7 +24,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE VIEW average_user_cost_view AS
+DROP VIEW IF EXISTS average_user_cost_view;
+CREATE OR REPLACE VIEW average_user_cost_view AS
 SELECT
     get_average_training_cost() AS calculation,
     u.discipline AS discipline_name,
