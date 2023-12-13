@@ -46,9 +46,11 @@ build-backend:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  before_script:
+    - VERSION=$(cat ${CI_PROJECT_DIR}/project-version | grep -o -E '[0-9]+[.][0-9]+[.][0-9]')
   script:
     - echo "{\"auths\":{\"$NEXUS_URL\":{\"auth\":\"$(echo -n $NEXUS_USER:$NEXUS_PASS | base64)\"}}}"> /kaniko/.docker/config.json
-    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Dockerfile" --destination "$NEXUS_TLS:${CI_COMMIT_SHA}" #${CI_COMMIT_REF_SLUG}
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Dockerfile" --destination "$NEXUS_TLS:$VERSION" #${CI_COMMIT_REF_SLUG}
   needs: [test_migration]
   only:
     - main
@@ -60,15 +62,15 @@ tagging:
     - git remote set-url origin "https://$REPO_TOKEN_NAME:$REPO_ACCESS_TOKEN@gitlab.tool.mddinternship.com/devops/argocd.git"
     - git config --global user.email "danielBot@endava.com"
     - git config --global user.name "danielBot"
+    - VERSION=$(cat ${CI_PROJECT_DIR}/project-version | grep -o -E '[0-9]+[.][0-9]+[.][0-9]')
     # Reset to remote main branch
     - git clone https://$REPO_TOKEN_NAME:$REPO_ACCESS_TOKEN@gitlab.tool.mddinternship.com/devops/argocd.git
     - cd argocd/TraningLicenseSharing/Backend
   script:
-    #- VERSION=$(cat ${CI_PROJECT_DIR}/project-version | grep -o -E '[0-9]+[.][0-9]+[.][0-9]')
-    - yq -i 'select(di == 3).spec.template.spec.containers[0].image = "'$NEXUS_TLS':'$CI_COMMIT_SHA'"' ArgoCD.yaml
-    - yq -i 'select(di == 5).spec.template.spec.containers[0].image = "'$NEXUS_TLS':'$CI_COMMIT_SHA'"' ArgoCD.yaml
+    - yq -i 'select(di == 3).spec.template.spec.containers[0].image = "'$NEXUS_TLS':'$VERSION'"' ArgoCD.yaml
+    - yq -i 'select(di == 5).spec.template.spec.containers[0].image = "'$NEXUS_TLS':'$VERSION'"' ArgoCD.yaml
     - git add ArgoCD.yaml
-    - git commit -m "Update TagImage to 'CI_COMMIT_SHA'"
+    - git commit -m "Update TagImage to '$VERSION'"
     - git push -o ci.skip origin HEAD:main
   needs: [build-backend]
   only:
