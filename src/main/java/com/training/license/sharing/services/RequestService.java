@@ -48,7 +48,7 @@ public class RequestService {
     public List<UserRequestDTO> findAll(Boolean asc, String field) {
         log.info(FIND_ALL_REQUESTS, asc, field);
         asc = Objects.requireNonNullElse(asc, false);
-        field = Objects.requireNonNullElse(field, "id");
+        field = Objects.requireNonNullElse(field, "requestDate");
 
         fetchAndValidateRequests();
 
