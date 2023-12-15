@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ public class AverageUserCostService {
 
         Integer commonCalculation = entities.get(0).getCalculation();
         List<DisciplineCostDTO> disciplineCosts = entities.stream()
+                .sorted(Comparator.comparing(AverageUserCostView::getDisciplineName))
                 .map(entity -> DisciplineCostDTO.builder()
                         .disciplineName(entity.getDisciplineName())
                         .averageCostsUserDiscipline(entity.getAverageCostsUserDiscipline())
@@ -40,4 +42,5 @@ public class AverageUserCostService {
                 .disciplineCosts(disciplineCosts)
                 .build();
     }
+
 }
