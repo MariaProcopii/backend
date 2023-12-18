@@ -2,14 +2,14 @@ package com.training.license.sharing.services;
 
 import com.training.license.sharing.dto.CredentialDTO;
 import com.training.license.sharing.dto.ExpiringLicenseDTO;
-import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.dto.LicenseSummaryDTO;
+import com.training.license.sharing.dto.NewLicenseDTO;
 import com.training.license.sharing.dto.UnusedLicenseDTO;
 import com.training.license.sharing.entities.Credential;
 import com.training.license.sharing.entities.License;
-import com.training.license.sharing.entities.enums.DurationUnit;
 import com.training.license.sharing.entities.LicenseCredential;
 import com.training.license.sharing.entities.LicenseCredentialKey;
+import com.training.license.sharing.entities.enums.DurationUnit;
 import com.training.license.sharing.repositories.LicenseCredentialRepository;
 import com.training.license.sharing.repositories.LicenseRepository;
 import com.training.license.sharing.util.CredentialConverter;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -111,19 +109,19 @@ public class LicenseService {
     }
 
     public boolean doesLicenseExistByNameExceptId(String name, Long id) {
-        if (Objects.isNull(id)){
+        if (Objects.isNull(id)) {
             id = 0L;
         }
         Optional<License> licenseOptional = licenseRepository.findLicenseByLicenseName(name);
-        return licenseOptional.isPresent() && !Objects.equals(licenseOptional.get().getId(), id) ;
+        return licenseOptional.isPresent() && !Objects.equals(licenseOptional.get().getId(), id);
     }
 
-    public boolean doesLicenseExistById(Long id){
+    public boolean doesLicenseExistById(Long id) {
         return id != null && licenseRepository.existsById(id);
     }
 
     @Transactional
-    public void editLicense(NewLicenseDTO newLicenseDTO){
+    public void editLicense(NewLicenseDTO newLicenseDTO) {
         log.info(EDIT_LICENSE, newLicenseDTO.getLicenseId());
         License unupdatedLicense = licenseRepository.findById(newLicenseDTO.getLicenseId()).get();
         License license = convertToLicense(newLicenseDTO, unupdatedLicense);
@@ -189,12 +187,19 @@ public class LicenseService {
 
     private NewLicenseDTO convertToLicenseEditingDTO(License license, List<CredentialDTO> credentialDTOList) {
         return modelMapper.map(license, NewLicenseDTO.class).toBuilder()
+                .logo(byteArrayToString(license.getLogo()))
                 .typeOfLicense(license.getLicenseType())
                 .credentials(credentialDTOList)
                 .build();
     }
 
-    private License convertToLicense (NewLicenseDTO newLicenseDTO, License oldLicense){
+    private static String byteArrayToString(byte[] byteArray) {
+        return Optional.ofNullable(byteArray)
+                .map(String::new)
+                .orElse(null);
+    }
+
+    private License convertToLicense(NewLicenseDTO newLicenseDTO, License oldLicense) {
         return modelMapper.map(newLicenseDTO, License.class).toBuilder()
                 .unusedPeriod(oldLicense.getUnusedPeriod())
                 .creatingDate(oldLicense.getCreatingDate())
@@ -241,8 +246,8 @@ public class LicenseService {
     private LicenseSummaryDTO convertToLicenseSummaryDto(License license) {
         String logoBase64 = Optional.ofNullable(license.getLogo())
                 .filter(logo -> logo.length > 0)
-                .map(logo -> Base64.getEncoder().encodeToString(logo))
-                .orElse(DEFAULT_LOGO_BASE64);
+                .map(String::new)
+                .orElse(null);
 
         return LicenseSummaryDTO.builder()
                 .licenseName(license.getLicenseName())
@@ -257,7 +262,7 @@ public class LicenseService {
                 .expirationDate(license.getExpirationDate())
                 .licenseType(license.getLicenseType())
                 .isRecurring(license.getIsRecurring())
-                .logo(Arrays.toString(logoBase64.getBytes()))
+                .logo(logoBase64)
                 .build();
     }
 
